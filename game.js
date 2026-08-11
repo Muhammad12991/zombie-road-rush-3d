@@ -174,7 +174,7 @@ const input = {
 
 // --- Mobile Controller Socket Logic ---
 try {
-    const socket = io();
+    const socket = io('https://zombie-road-rush-3d.onrender.com');
     socket.emit('registerPC');
 
     socket.on('qrCode', (url) => {

@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>ZR Controller</title>
-    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://zombie-road-rush-3d.onrender.com/socket.io/socket.io.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;800&display=swap" rel="stylesheet">
     <style>
         body {
@@ -150,7 +150,8 @@
     </div>
 
     <script>
-        const socket = io();
+        // Yahan par humne Render ka live URL set kar diya hai
+        const socket = io('https://zombie-road-rush-3d.onrender.com');
         const statusEl = document.getElementById('status');
 
         socket.emit('registerMobile');
