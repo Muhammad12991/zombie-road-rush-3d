@@ -575,10 +575,8 @@ kbd {
   font-size: 14px;
   letter-spacing: 2px;
   animation: comboPop 1.4s ease-in-out infinite;
-  text-align: center;
-  display: block;
-  width: 100%;
-  margin: 10px auto; /* Yeh upar-neechay gap dega aur horizontally bilkul centre kar dega */
+  display: inline-block;
+  margin: 10px auto;
 }
 
 /* ---------------- Leaderboard (feature: end game leaderboard) ---------------- */
