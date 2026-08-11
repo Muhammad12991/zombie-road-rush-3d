@@ -739,3 +739,692 @@ kbd {
 }
 
 @keyframes spin { to { transform: rotate(360deg); } }
+
+/* ==========================================================================
+   ROAD RUSH 3D - OVERRIDES & UI ENHANCEMENTS
+   ========================================================================== */
+
+/* 1. Main Menu & Game Over UI Font & Icon Boost */
+.title-line {
+    font-size: clamp(2.5rem, 6vw, 4.5rem) !important;
+}
+
+.menu-panel {
+    max-width: 520px !important;
+    width: 90% !important;
+}
+
+.menu-row {
+    font-size: 1.25rem !important;
+    padding: 14px 20px !important;
+    margin-bottom: 12px !important;
+}
+
+.identity-input {
+    font-size: 1.15rem !important;
+    padding: 12px 16px !important;
+}
+
+.menu-row-label, .menu-row-value {
+    font-size: 1.2rem !important;
+    font-weight: bold !important;
+}
+
+/* 2. Game Over & Stats Scalability */
+.section-title {
+    font-size: clamp(2.2rem, 5vw, 3.8rem) !important;
+}
+
+.final-stats {
+    gap: 15px !important;
+    margin: 20px auto !important;
+}
+
+.final-stat span {
+    font-size: 1.1rem !important;
+}
+
+.final-stat b {
+    font-size: 1.6rem !important;
+}
+
+.primary-btn, .ghost-btn {
+    font-size: 1.2rem !important;
+    padding: 14px 24px !important;
+    letter-spacing: 1.5px !important;
+}
+
+/* 3. Controls Popup Modal Enhancements */
+.controls-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(5, 3, 8, 0.92);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    backdrop-filter: blur(5px);
+}
+
+.controls-card {
+    background: #120a14;
+    border: 2px solid #ff3333;
+    padding: 35px 30px;
+    border-radius: 14px;
+    text-align: center;
+    max-width: 480px;
+    width: 90%;
+    box-shadow: 0 0 30px rgba(255, 0, 0, 0.5);
+}
+
+.controls-title {
+    color: #ff3333;
+    font-size: 2rem !important;
+    margin-bottom: 25px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+.control-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 18px 0;
+    font-size: 1.25rem !important;
+    color: #fff;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 10px;
+}
+
+.key-badge {
+    background: #241026;
+    border: 1px solid #ff3333;
+    color: #ffcc00;
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-weight: bold;
+    font-family: monospace;
+    font-size: 1.1rem;
+    box-shadow: 0 0 8px rgba(255, 204, 0, 0.2);
+}
+/* 
+/* ==========================================================================
+   FINAL REFINED GAME OVER SCREEN UI (BALANCED TYPOGRAPHY & STRETCHED LAYOUT)
+   ========================================================================== */
+
+/* Main Overlay Wrapper - Keeps position slightly upward */
+#gameOverScreen {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    background: radial-gradient(circle, rgba(18, 5, 5, 0.94) 0%, rgba(5, 2, 2, 0.98) 100%) !important;
+    backdrop-filter: blur(8px);
+}
+
+.game-over-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 580px;
+    margin-top: -30px;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+/* Thinner Dripping Horror Title */
+.dripping-title {
+    font-family: 'Creepster', cursive, sans-serif !important;
+    font-weight: 400 !important;
+    color: #ff2222 !important;
+    font-size: clamp(2.4rem, 5vw, 3.2rem) !important;
+    letter-spacing: 4px !important;
+    margin: 0 0 4px 0 !important;
+    text-shadow: 0 0 10px rgba(255, 34, 34, 0.5), 2px 2px 0px #000;
+}
+
+/* Subtitle kept exactly as it is */
+.dripping-subtitle {
+    font-family: 'Creepster', cursive, sans-serif !important;
+    color: #ff7777 !important;
+    font-size: clamp(1rem, 2.5vw, 1.35rem) !important;
+    letter-spacing: 1.5px !important;
+    margin: 0 0 15px 0 !important;
+    text-shadow: 0 0 8px rgba(255, 0, 0, 0.4);
+}
+
+/* Dedicated Game Over Card Containers */
+.game-over-card {
+    width: 100% !important;
+    box-sizing: border-box !important;
+    background: rgba(15, 15, 20, 0.85);
+    border: 1px solid rgba(255, 34, 0, 0.35);
+    border-radius: 12px;
+    padding: 14px 18px;
+    margin-bottom: 12px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.8), inset 0 0 10px rgba(255, 0, 0, 0.08);
+}
+
+/* Stats Card Layout & Softer Thinner Numbers */
+.stats-card {
+    border-color: rgba(255, 51, 51, 0.4);
+}
+
+.final-stats {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    width: 100%;
+}
+
+.final-stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.stat-lbl {
+    color: #8a99ad;
+    font-size: 0.82rem;
+    font-weight: 600;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+}
+
+/* Clean, Softer, Thinner Digits (No Heavy/Harsh Neon Glow) */
+.stat-num {
+    color: #f1f5f9;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-size: 1.65rem;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+/* Leaderboard Card & Layout Balancing */
+.leaderboard-card {
+    border-color: rgba(255, 170, 0, 0.35);
+    padding: 14px 18px !important;
+}
+
+.leaderboard-wrap {
+    width: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    box-sizing: border-box !important;
+}
+
+.lb-title {
+    color: #e2b022;
+    font-family: 'Impact', 'Arial Black', sans-serif;
+    font-size: 1.15rem;
+    font-weight: 400;
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+    text-align: center;
+    width: 100%;
+}
+
+/* Fixed Vertically Stretched Box with Hidden Scrollbar & Full Width */
+#leaderboardList {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: 165px;
+    max-height: 165px;
+    overflow-y: scroll;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE/Edge */
+    box-sizing: border-box !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+#leaderboardList::-webkit-scrollbar {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+}
+
+/* Properly Distributed Full-Width Leaderboard Rows */
+.lb-row {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    padding: 8px 16px !important;
+    margin-bottom: 5px !important;
+    background: rgba(255, 255, 255, 0.03) !important;
+    border-radius: 6px !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
+    font-family: 'Courier New', monospace;
+}
+
+.lb-row.lb-current {
+    background: rgba(255, 34, 0, 0.22) !important;
+    border: 1px solid rgba(255, 34, 0, 0.7) !important;
+}
+
+/* Thinner Rank Number */
+.lb-rank {
+    color: #d9ac29 !important;
+    font-size: 1.05rem !important;
+    font-weight: 500 !important;
+    min-width: 35px !important;
+    text-align: left !important;
+}
+
+/* Thinner Player/Company Name Distributed Across Center */
+.lb-name {
+    flex-grow: 1 !important;
+    text-align: center !important; /* Centered in the box middle */
+    color: #e2e8f0 !important;
+    font-size: 1.05rem !important;
+    font-weight: 400 !important;
+    letter-spacing: 0.8px !important;
+    padding: 0 15px !important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Thinner Clean Score Number */
+.lb-score {
+    color: #34d399 !important;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+    font-size: 1.15rem !important;
+    font-weight: 500 !important;
+    min-width: 75px !important;
+    text-align: right !important;
+}
+
+/* Action Buttons Container */
+.game-over-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 9px;
+    width: 100%;
+}
+
+/* DRIVE AGAIN Button (Same Design, Thinner Text) */
+.pulse-btn {
+    background: #ff1100 !important;
+    color: #ffffff !important;
+    font-family: 'Impact', Arial, sans-serif !important;
+    font-weight: 400 !important;
+    font-size: 1.3rem !important;
+    letter-spacing: 2px !important;
+    padding: 10px 38px !important;
+    border: none !important;
+    border-radius: 8px !important;
+    cursor: pointer !important;
+    box-shadow: 0 0 15px rgba(255, 17, 0, 0.5) !important;
+    animation: driveBtnPulse 1.8s infinite ease-in-out;
+    transition: transform 0.2s, background 0.2s !important;
+}
+
+.pulse-btn:hover {
+    background: #e60000 !important;
+    transform: scale(1.05) !important;
+    box-shadow: 0 0 22px rgba(255, 17, 0, 0.8) !important;
+}
+
+@keyframes driveBtnPulse {
+    0% { transform: scale(1); box-shadow: 0 0 10px rgba(255, 17, 0, 0.4); }
+    50% { transform: scale(1.02); box-shadow: 0 0 18px rgba(255, 17, 0, 0.8); }
+    100% { transform: scale(1); box-shadow: 0 0 10px rgba(255, 17, 0, 0.4); }
+}
+
+/* MAIN MENU Red Horror-Themed Button */
+.menu-styled-btn {
+    background: rgba(35, 10, 10, 0.85) !important;
+    color: #ff8888 !important;
+    border: 1px solid rgba(255, 34, 0, 0.5) !important;
+    font-family: 'Impact', Arial, sans-serif !important;
+    font-weight: 400 !important;
+    font-size: 1.15rem !important;
+    letter-spacing: 1.5px !important;
+    padding: 8px 30px !important;
+    border-radius: 6px !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+    box-shadow: 0 0 8px rgba(255, 0, 0, 0.2) !important;
+}
+
+.menu-styled-btn:hover {
+    background: rgba(255, 34, 0, 0.25) !important;
+    color: #ffffff !important;
+    border-color: #ff3333 !important;
+    box-shadow: 0 0 14px rgba(255, 34, 0, 0.5) !important;
+    transform: scale(1.03) !important;
+}
+
+/* EXPORT ALL CSV Subtle Horror-Themed Thin Button */
+.export-csv-btn {
+    margin-top: 4px !important;
+    background: rgba(18, 12, 12, 0.9) !important;
+    color: #d97706 !important;
+    border: 1px solid rgba(217, 119, 6, 0.6) !important;
+    padding: 8px 24px !important;
+    font-family: 'Creepster', cursive, sans-serif !important;
+    font-weight: 400 !important;
+    font-size: 1.15rem !important;
+    letter-spacing: 1.5px !important;
+    border-radius: 6px !important;
+    cursor: pointer !important;
+    text-transform: uppercase !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    box-shadow: 0 0 8px rgba(217, 119, 6, 0.2) !important;
+    transition: all 0.2s ease-in-out !important;
+}
+
+.export-csv-btn:hover {
+    background: rgba(217, 119, 6, 0.2) !important;
+    color: #fef08a !important;
+    border-color: #fef08a !important;
+    box-shadow: 0 0 16px rgba(217, 119, 6, 0.5) !important;
+    transform: scale(1.03) !important;
+}
+/* ==========================================================================
+   FINAL REFINED GAME OVER SCREEN UI (CENTERED & FULL-WIDTH STRETCHED)
+   ========================================================================== */
+
+/* Main Overlay Wrapper - Keeps position slightly upward */
+#gameOverScreen {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    background: radial-gradient(circle, rgba(18, 5, 5, 0.94) 0%, rgba(5, 2, 2, 0.98) 100%) !important;
+    backdrop-filter: blur(8px);
+}
+
+.game-over-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 580px;
+    margin-top: -30px;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+/* Thinner Dripping Horror Title */
+.dripping-title {
+    font-family: 'Creepster', cursive, sans-serif !important;
+    font-weight: 400 !important;
+    color: #ff2222 !important;
+    font-size: clamp(2.4rem, 5vw, 3.2rem) !important;
+    letter-spacing: 4px !important;
+    margin: 0 0 4px 0 !important;
+    text-shadow: 0 0 10px rgba(255, 34, 34, 0.5), 2px 2px 0px #000;
+}
+
+/* Subtitle */
+.dripping-subtitle {
+    font-family: 'Creepster', cursive, sans-serif !important;
+    color: #ff7777 !important;
+    font-size: clamp(1rem, 2.5vw, 1.35rem) !important;
+    letter-spacing: 1.5px !important;
+    margin: 0 0 15px 0 !important;
+    text-shadow: 0 0 8px rgba(255, 0, 0, 0.4);
+}
+
+/* Dedicated Game Over Card Containers */
+.game-over-card {
+    width: 100% !important;
+    box-sizing: border-box !important;
+    background: rgba(15, 15, 20, 0.85);
+    border: 1px solid rgba(255, 34, 0, 0.35);
+    border-radius: 12px;
+    padding: 14px 20px !important;
+    margin-bottom: 12px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.8), inset 0 0 10px rgba(255, 0, 0, 0.08);
+}
+
+/* Stats Card Layout & Softer Thinner Numbers */
+.stats-card {
+    border-color: rgba(255, 51, 51, 0.4);
+}
+
+.final-stats {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    width: 100%;
+}
+
+.final-stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.stat-lbl {
+    color: #8a99ad;
+    font-size: 0.82rem;
+    font-weight: 600;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+}
+
+/* Clean, Softer, Thinner Digits */
+.stat-num {
+    color: #f1f5f9;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-size: 1.65rem;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+/* Leaderboard Card Container Fix */
+.leaderboard-card {
+    border-color: rgba(255, 170, 0, 0.35);
+    padding: 16px 20px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.leaderboard-wrap {
+    width: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    box-sizing: border-box !important;
+}
+
+.lb-title {
+    color: #e2b022;
+    font-family: 'Impact', 'Arial Black', sans-serif;
+    font-size: 1.15rem;
+    font-weight: 400;
+    letter-spacing: 2px;
+    margin-bottom: 12px;
+    text-align: center;
+    width: 100%;
+}
+
+/* Fixed Vertically Stretched Box - Forces 100% Full Width */
+#leaderboardList, 
+.leaderboard {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: 165px;
+    max-height: 165px;
+    overflow-y: scroll;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE/Edge */
+    box-sizing: border-box !important;
+    padding: 0 !important;
+    margin: 0 auto !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+}
+
+/* Hide Scrollbar Completely */
+#leaderboardList::-webkit-scrollbar,
+.leaderboard::-webkit-scrollbar {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+}
+
+/* Leaderboard Rows - Full Box Stretch & Balanced Alignment */
+.lb-row {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    padding: 8px 16px !important;
+    margin: 0 0 6px 0 !important;
+    background: rgba(255, 255, 255, 0.04) !important;
+    border-radius: 6px !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+    font-family: 'Courier New', monospace;
+}
+
+.lb-row.lb-current {
+    background: rgba(255, 34, 0, 0.22) !important;
+    border: 1px solid rgba(255, 34, 0, 0.7) !important;
+}
+
+/* Rank Number (Left Side) */
+.lb-rank {
+    color: #d9ac29 !important;
+    font-size: 1.05rem !important;
+    font-weight: 500 !important;
+    min-width: 35px !important;
+    text-align: left !important;
+}
+
+/* Player/Company Name (Center Aligned) */
+.lb-name {
+    flex-grow: 1 !important;
+    text-align: center !important;
+    color: #e2e8f0 !important;
+    font-size: 1.05rem !important;
+    font-weight: 400 !important;
+    letter-spacing: 0.8px !important;
+    padding: 0 15px !important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Score Number (Right Side) */
+.lb-score {
+    color: #34d399 !important;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+    font-size: 1.15rem !important;
+    font-weight: 500 !important;
+    min-width: 75px !important;
+    text-align: right !important;
+}
+
+/* Action Buttons Container */
+.game-over-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 9px;
+    width: 100%;
+}
+
+/* DRIVE AGAIN Button */
+.pulse-btn {
+    background: #ff1100 !important;
+    color: #ffffff !important;
+    font-family: 'Impact', Arial, sans-serif !important;
+    font-weight: 400 !important;
+    font-size: 1.3rem !important;
+    letter-spacing: 2px !important;
+    padding: 10px 38px !important;
+    border: none !important;
+    border-radius: 8px !important;
+    cursor: pointer !important;
+    box-shadow: 0 0 15px rgba(255, 17, 0, 0.5) !important;
+    animation: driveBtnPulse 1.8s infinite ease-in-out;
+    transition: transform 0.2s, background 0.2s !important;
+}
+
+.pulse-btn:hover {
+    background: #e60000 !important;
+    transform: scale(1.05) !important;
+    box-shadow: 0 0 22px rgba(255, 17, 0, 0.8) !important;
+}
+
+@keyframes driveBtnPulse {
+    0% { transform: scale(1); box-shadow: 0 0 10px rgba(255, 17, 0, 0.4); }
+    50% { transform: scale(1.02); box-shadow: 0 0 18px rgba(255, 17, 0, 0.8); }
+    100% { transform: scale(1); box-shadow: 0 0 10px rgba(255, 17, 0, 0.4); }
+}
+
+/* MAIN MENU Red Horror-Themed Button */
+.menu-styled-btn {
+    background: rgba(35, 10, 10, 0.85) !important;
+    color: #ff8888 !important;
+    border: 1px solid rgba(255, 34, 0, 0.5) !important;
+    font-family: 'Impact', Arial, sans-serif !important;
+    font-weight: 400 !important;
+    font-size: 1.15rem !important;
+    letter-spacing: 1.5px !important;
+    padding: 8px 30px !important;
+    border-radius: 6px !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+    box-shadow: 0 0 8px rgba(255, 0, 0, 0.2) !important;
+}
+
+.menu-styled-btn:hover {
+    background: rgba(255, 34, 0, 0.25) !important;
+    color: #ffffff !important;
+    border-color: #ff3333 !important;
+    box-shadow: 0 0 14px rgba(255, 34, 0, 0.5) !important;
+    transform: scale(1.03) !important;
+}
+
+/* EXPORT ALL CSV Subtle Horror Button */
+.export-csv-btn {
+    margin-top: 4px !important;
+    background: rgba(18, 12, 12, 0.9) !important;
+    color: #d97706 !important;
+    border: 1px solid rgba(217, 119, 6, 0.6) !important;
+    padding: 8px 24px !important;
+    font-family: 'Creepster', cursive, sans-serif !important;
+    font-weight: 400 !important;
+    font-size: 1.15rem !important;
+    letter-spacing: 1.5px !important;
+    border-radius: 6px !important;
+    cursor: pointer !important;
+    text-transform: uppercase !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    box-shadow: 0 0 8px rgba(217, 119, 6, 0.2) !important;
+    transition: all 0.2s ease-in-out !important;
+}
+
+.export-csv-btn:hover {
+    background: rgba(217, 119, 6, 0.2) !important;
+    color: #fef08a !important;
+    border-color: #fef08a !important;
+    box-shadow: 0 0 16px rgba(217, 119, 6, 0.5) !important;
+    transform: scale(1.03) !important;
+}

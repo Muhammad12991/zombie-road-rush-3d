@@ -5,6 +5,11 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Zombie Road Rush 3D</title>
+    <!-- Liquid Dripping Horror Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Creepster&family=Eater&family=Nosifer&display=swap" rel="stylesheet">
+
     <link rel="stylesheet" href="style.css" />
     <style>
         .qr-container {
@@ -44,11 +49,71 @@
             letter-spacing: 1px;
             text-transform: uppercase;
         }
-
+        
         .new-high {
             grid-column: span 4;
             text-align: center;
             margin-top: 10px;
+        }
+        /* Controls Popup Modal Styles */
+        
+        .controls-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 999;
+        }
+        
+        .controls-card {
+            background: #111;
+            border: 2px solid #ff3333;
+            padding: 30px;
+            border-radius: 12px;
+            text-align: center;
+            max-width: 450px;
+            width: 90%;
+            box-shadow: 0 0 20px rgba(255, 0, 0, 0.4);
+        }
+        
+        .controls-title {
+            color: #ff3333;
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            letter-spacing: 2px;
+        }
+        
+        .control-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 15px 0;
+            font-size: 1.2rem;
+            color: #fff;
+            border-bottom: 1px solid #333;
+            padding-bottom: 8px;
+        }
+        
+        .key-badge {
+            background: #222;
+            border: 1px solid #ff3333;
+            color: #ffcc00;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-weight: bold;
+            font-family: monospace;
+        }
+        
+        #launchGameBtn {
+            margin-top: 20px;
+            width: 100%;
+            font-size: 1.2rem;
+            padding: 12px;
         }
     </style>
     <!-- WebSocket Library for Mobile Controller -->
@@ -128,14 +193,15 @@
                     <span class="menu-row-value" id="startBest">0</span>
                 </div>
 
-                <button id="timeToggleBtn" class="menu-row menu-row--toggle">
-                    <span class="menu-row-label">TIME OF DAY</span>
-                    <span class="menu-row-value" id="timeToggleVal">NIGHT</span>
+                <!-- Main Menu Sound Toggle -->
+                <button id="mainSoundToggleBtn" class="menu-row menu-row--toggle">
+                    <span class="menu-row-label">SOUND</span>
+                    <span class="menu-row-value" id="mainSoundToggleVal">ON</span>
                 </button>
 
                 <div class="menu-row menu-row--controls">
                     <div class="ctrl-line"><kbd>&larr;</kbd><kbd>&rarr;</kbd> / <kbd>A</kbd><kbd>D</kbd> STEER</div>
-                    <div class="ctrl-line"><kbd>SHIFT</kbd> DRIFT <span class="hint">guaranteed kill</span></div>
+                    <div class="ctrl-line"><kbd>SPACE</kbd> DRIFT <span class="hint">guaranteed kill</span></div>
                     <div class="ctrl-line"><kbd>P</kbd> PAUSE</div>
                     <div class="ctrl-line touch-only">DRAG TO STEER · HOLD TO DRIFT</div>
                 </div>
@@ -151,6 +217,30 @@
             </div>
         </div>
 
+        <!-- ================= CONTROLS POPUP MODAL ================= -->
+        <div id="controlsModal" class="controls-modal hidden">
+            <div class="controls-card">
+                <h2 class="controls-title">MISSION CONTROLS</h2>
+                <div class="control-row">
+                    <span>Steer Left</span>
+                    <span class="key-badge">&larr; / A</span>
+                </div>
+                <div class="control-row">
+                    <span>Steer Right</span>
+                    <span class="key-badge">&rarr; / D</span>
+                </div>
+                <div class="control-row">
+                    <span>Drift / Shift</span>
+                    <span class="key-badge">SPACEBAR</span>
+                </div>
+                <div class="control-row">
+                    <span>Pause Game</span>
+                    <span class="key-badge">P</span>
+                </div>
+                <button id="launchGameBtn" type="button" class="primary-btn">LET'S DRIVE ▶</button>
+            </div>
+        </div>
+
         <!-- ================= PAUSE SCREEN ================= -->
         <div id="pauseScreen" class="overlay hidden">
             <h2 class="section-title">PAUSED</h2>
@@ -160,29 +250,41 @@
             <button id="quitBtn" class="ghost-btn">QUIT TO MENU</button>
         </div>
 
-        <!-- ================= GAME OVER SCREEN ================= -->
+        <!-- ================= GAME OVER SCREEN (REDESIGNED) ================= -->
         <div id="gameOverScreen" class="overlay hidden">
-            <h2 class="section-title death">GAME OVER</h2>
-            <p id="gameOverReason" class="subtitle"></p>
-            <div class="final-stats">
-                <div class="final-stat"><span>Score</span><b id="finalScore">0</b></div>
-                <div class="final-stat"><span>Zombies Killed</span><b id="finalKills">0</b></div>
-                <div class="final-stat"><span>Distance</span><b id="finalDist">0m</b></div>
-                <div class="final-stat"><span>Best Combo</span><b id="finalCombo">x1</b></div>
+            <div class="game-over-container">
+                <h2 class="section-title death dripping-title">GAME OVER</h2>
+                <p id="gameOverReason" class="subtitle dripping-subtitle">Your car couldn't take any more damage.</p>
 
-                <!-- Yahan dalne se yeh stats wali width lega -->
-                <div id="newBest" class="new-high hidden">
-                    NEW BEST SCORE!
+                <!-- Dedicated Final Stats Card -->
+                <div class="game-over-card stats-card">
+                    <div class="final-stats">
+                        <div class="final-stat"><span class="stat-lbl">SCORE</span><b id="finalScore" class="stat-num">0</b></div>
+                        <div class="final-stat"><span class="stat-lbl">ZOMBIES KILLED</span><b id="finalKills" class="stat-num">0</b></div>
+                        <div class="final-stat"><span class="stat-lbl">DISTANCE</span><b id="finalDist" class="stat-num">0m</b></div>
+                        <div class="final-stat"><span class="stat-lbl">BEST COMBO</span><b id="finalCombo" class="stat-num">x1</b></div>
+
+                        <div id="newBest" class="new-high hidden">
+                            NEW BEST SCORE!
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dedicated Top 10 Leaderboard Card -->
+                <div class="game-over-card leaderboard-card">
+                    <div id="leaderboardWrap" class="leaderboard-wrap">
+                        <div class="lb-title">TOP 10 HIGH SCORES</div>
+                        <div id="leaderboardList" class="leaderboard"></div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons Container -->
+                <div class="game-over-actions">
+                    <button id="restartBtn" class="primary-btn pulse-btn">DRIVE AGAIN</button>
+                    <button id="menuBtn" class="ghost-btn menu-styled-btn">MAIN MENU</button>
+                    <button id="exportCsvBtn" class="export-csv-btn" title="Download every recorded run as a CSV file">EXPORT ALL SCORES (CSV)</button>
                 </div>
             </div>
-            <div id="leaderboardWrap" class="leaderboard-wrap">
-                <div class="lb-title">TOP 10</div>
-                <div id="leaderboardList" class="leaderboard"></div>
-            </div>
-
-            <button id="restartBtn" class="primary-btn">DRIVE AGAIN</button>
-            <button id="menuBtn" class="ghost-btn">MAIN MENU</button>
-            <button id="exportCsvBtn" class="export-csv-btn" title="Download every recorded run as a CSV file">EXPORT ALL SCORES (CSV)</button>
         </div>
 
         <!-- ================= LOADING SCREEN ================= -->

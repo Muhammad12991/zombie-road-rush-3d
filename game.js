@@ -2,9 +2,9 @@
  * game.js
  * -----------------------------------------------------------------------
  * Entry point. Sets up the Three.js scene (renderer, third-person chase
- * camera, night-city lighting + fog), wires together the car, road,
+ * camera, balanced lighting + fog), wires together the car, road,
  * zombies, obstacles, fuel, effects, audio and HUD, and runs the main
- * loop / state machine (menu → playing → paused → game over).
+ * loop / state machine (menu → controls modal → playing → paused → game over).
  * -----------------------------------------------------------------------
  */
 import * as THREE from "./assets/js/vendor/three.module.min.js";
@@ -21,10 +21,10 @@ import { Storage } from "./js/storage.js";
 
 // ---------------- Renderer / Scene / Camera ----------------
 const viewport = document.getElementById("viewport");
-const FOG_COLOR = 0x0c0a0d;
+const FOG_COLOR = 0x222a38;
 
 const scene = new THREE.Scene();
-scene.fog = new THREE.FogExp2(FOG_COLOR, 0.028);
+scene.fog = new THREE.FogExp2(FOG_COLOR, 0.016);
 scene.background = new THREE.Color(FOG_COLOR);
 
 const camera = new THREE.PerspectiveCamera(62, window.innerWidth / window.innerHeight, 0.1, 300);
@@ -43,95 +43,46 @@ window.addEventListener("resize", () => {
     renderer.setSize(window.innerWidth, window.innerHeight);
 });
 
-// ---------------- Lighting ----------------
-const ambient = new THREE.AmbientLight(0x2a3550, 0.55);
+// ---------------- Lighting (Single Balanced Mode) ----------------
+const ambient = new THREE.AmbientLight(0x708090, 0.75);
 scene.add(ambient);
 
-const moon = new THREE.DirectionalLight(0x8fa8d9, 1.05);
-moon.position.set(12, 24, -6);
-moon.castShadow = true;
-moon.shadow.mapSize.set(1024, 1024);
-moon.shadow.camera.near = 5;
-moon.shadow.camera.far = 60;
-moon.shadow.camera.left = -22;
-moon.shadow.camera.right = 22;
-moon.shadow.camera.top = 22;
-moon.shadow.camera.bottom = -22;
-moon.shadow.bias = -0.0025;
-scene.add(moon);
-scene.add(moon.target);
+const sun = new THREE.DirectionalLight(0xfff5e6, 1.2);
+sun.position.set(12, 28, -6);
+sun.castShadow = true;
+sun.shadow.mapSize.set(1024, 1024);
+sun.shadow.camera.near = 5;
+sun.shadow.camera.far = 60;
+sun.shadow.camera.left = -22;
+sun.shadow.camera.right = 22;
+sun.shadow.camera.top = 22;
+sun.shadow.camera.bottom = -22;
+sun.shadow.bias = -0.0025;
+scene.add(sun);
+scene.add(sun.target);
 
-// ---------------- Moon disc (visible in the sky, ignores fog) ----------------
-const moonDiscMat = new THREE.MeshBasicMaterial({ color: 0xe4ebf7, fog: false });
-const moonDisc = new THREE.Mesh(new THREE.SphereGeometry(9, 24, 24), moonDiscMat);
-moonDisc.position.set(16, 58, -230);
-scene.add(moonDisc);
+// Visible sky disc
+const discMat = new THREE.MeshBasicMaterial({ color: 0xfff0d0, fog: false });
+const skyDisc = new THREE.Mesh(new THREE.SphereGeometry(9, 24, 24), discMat);
+skyDisc.position.set(16, 58, -230);
+scene.add(skyDisc);
 
 const glowCanvas = document.createElement("canvas");
 glowCanvas.width = 256;
 glowCanvas.height = 256;
 const gctx = glowCanvas.getContext("2d");
 const glowGrad = gctx.createRadialGradient(128, 128, 0, 128, 128, 128);
-glowGrad.addColorStop(0, "rgba(223,230,245,0.55)");
-glowGrad.addColorStop(0.4, "rgba(223,230,245,0.18)");
-glowGrad.addColorStop(1, "rgba(223,230,245,0)");
+glowGrad.addColorStop(0, "rgba(255, 240, 208, 0.45)");
+glowGrad.addColorStop(0.4, "rgba(255, 240, 208, 0.15)");
+glowGrad.addColorStop(1, "rgba(255, 240, 208, 0)");
 gctx.fillStyle = glowGrad;
 gctx.fillRect(0, 0, 256, 256);
 const glowTex = new THREE.CanvasTexture(glowCanvas);
-const moonGlowMat = new THREE.SpriteMaterial({ map: glowTex, transparent: true, depthWrite: false, fog: false });
-const moonGlow = new THREE.Sprite(moonGlowMat);
-moonGlow.scale.set(75, 75, 1);
-moonGlow.position.copy(moonDisc.position);
-scene.add(moonGlow);
-
-// ---------------- Time of day (night / afternoon) ----------------
-// The same directional light + sky disc double as "moon" at night and
-// "sun" in the afternoon — only their color/intensity/fog change.
-const TIME_KEY = "zombieRoadRush3D.timeOfDay";
-const TIME_PRESETS = {
-    night: {
-        fog: 0x0c0a0d,
-        bg: 0x0c0a0d,
-        fogDensity: 0.017,
-        ambientColor: 0x2a3550,
-        ambientIntensity: 0.55,
-        sunColor: 0x8fa8d9,
-        sunIntensity: 1.05,
-        discColor: 0xe4ebf7,
-        glowOpacity: 1,
-    },
-    afternoon: {
-        fog: 0x9fc0d6,
-        bg: 0x8fb3cf,
-        fogDensity: 0.011,
-        ambientColor: 0xd7e4ea,
-        ambientIntensity: 0.85,
-        sunColor: 0xfff0cf,
-        sunIntensity: 1.35,
-        discColor: 0xfff0b8,
-        glowOpacity: 0.55,
-    },
-};
-
-let timeOfDay = "night";
-try { timeOfDay = localStorage.getItem(TIME_KEY) || "night"; } catch (e) {}
-
-function applyTimeOfDay(mode) {
-    const p = TIME_PRESETS[mode] || TIME_PRESETS.night;
-    scene.fog.color.setHex(p.fog);
-    scene.fog.density = p.fogDensity;
-    scene.background.setHex(p.bg);
-    ambient.color.setHex(p.ambientColor);
-    ambient.intensity = p.ambientIntensity;
-    moon.color.setHex(p.sunColor);
-    moon.intensity = p.sunIntensity;
-    moonDiscMat.color.setHex(p.discColor);
-    moonGlowMat.opacity = p.glowOpacity;
-    timeOfDay = mode;
-    try { localStorage.setItem(TIME_KEY, mode); } catch (e) {}
-}
-
-applyTimeOfDay(timeOfDay);
+const glowMat = new THREE.SpriteMaterial({ map: glowTex, transparent: true, depthWrite: false, fog: false, opacity: 0.75 });
+const skyGlow = new THREE.Sprite(glowMat);
+skyGlow.scale.set(75, 75, 1);
+skyGlow.position.copy(skyDisc.position);
+scene.add(skyGlow);
 
 // ---------------- World systems ----------------
 const road = new CityRoad(scene);
@@ -148,14 +99,14 @@ const rain = new Rain(scene);
 UI.init();
 
 // ---------------- Game state ----------------
-const STATE = { MENU: "menu", PLAYING: "playing", PAUSED: "paused", GAMEOVER: "gameover" };
+const STATE = { MENU: "menu", CONTROLS: "controls", PLAYING: "playing", PAUSED: "paused", GAMEOVER: "gameover" };
 let state = STATE.MENU;
 
 let health, fuel, score, kills, distance, comboCount, comboTimer, bestCombo;
-let baseSpeed = 15,
+let baseSpeed = 22,
     difficulty = 0,
     difficultyTimer = 0,
-    worldSpeed = 15;
+    worldSpeed = 22;
 let gameOverReason = "";
 let groanTimer = 0;
 let lightningTimer = 10;
@@ -165,7 +116,6 @@ const FAR_Z = -70;
 const kbInput = { left: false, right: false, drift: false };
 const mobileInput = { left: false, right: false, drift: false };
 
-// Getter object ensures existing game loop physics reads merged inputs dynamically
 const input = {
     get left() { return kbInput.left || mobileInput.left; },
     get right() { return kbInput.right || mobileInput.right; },
@@ -196,7 +146,6 @@ try {
             statusEl.innerText = "WAITING...";
             statusEl.style.color = "#ff4444";
         }
-        // Safety Reset: Stop car if phone disconnects
         mobileInput.left = false;
         mobileInput.right = false;
         mobileInput.drift = false;
@@ -211,25 +160,57 @@ try {
     console.warn("Socket.IO not initialized. Running offline mode.");
 }
 
-// --- Keyboard Logic ---
+// --- Keyboard Logic (Spacebar = Drift) ---
 window.addEventListener("keydown", (e) => {
+    const typingInField = e.target && (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA");
+    if (typingInField) return;
+
     if (["ArrowLeft", "a", "A"].includes(e.key)) kbInput.left = true;
     if (["ArrowRight", "d", "D"].includes(e.key)) kbInput.right = true;
-    if (e.key === "Shift") kbInput.drift = true;
+    if (e.code === "Space") {
+        kbInput.drift = true;
+        e.preventDefault();
+    }
     if (e.key === "p" || e.key === "P") togglePause();
-    if (e.key === " " && state === STATE.MENU) startGame();
 });
+
 window.addEventListener("keyup", (e) => {
     if (["ArrowLeft", "a", "A"].includes(e.key)) kbInput.left = false;
     if (["ArrowRight", "d", "D"].includes(e.key)) kbInput.right = false;
-    if (e.key === "Shift") kbInput.drift = false;
+    if (e.code === "Space") kbInput.drift = false;
+});
+
+// Touch controls for mobile preview in browser
+let touchActive = false,
+    touchStartX = 0,
+    touchOriginX = 0;
+renderer.domElement.addEventListener("touchstart", (e) => {
+    if (state !== STATE.PLAYING) return;
+    touchActive = true;
+    touchStartX = e.touches[0].clientX;
+    touchOriginX = car.x;
+    kbInput.drift = true;
+}, { passive: true });
+
+renderer.domElement.addEventListener("touchmove", (e) => {
+    if (!touchActive) return;
+    const dx = e.touches[0].clientX - touchStartX;
+    const targetX = touchOriginX + dx * 0.02;
+    kbInput.left = targetX < car.x - 0.05;
+    kbInput.right = targetX > car.x + 0.05;
+}, { passive: true });
+
+renderer.domElement.addEventListener("touchend", () => {
+    touchActive = false;
+    kbInput.left = false;
+    kbInput.right = false;
+    kbInput.drift = false;
 });
 
 let best = Storage.getBest();
 UI.setStartBest(best);
 UI.updateStats(0, 0, 0, best);
 
-// Prefill company/player name from last time this browser played
 const lastIdentity = Storage.getLastIdentity();
 UI.setIdentity(lastIdentity.company, lastIdentity.player);
 let lastSubmittedRun = null;
@@ -253,7 +234,7 @@ function resetRun() {
     comboCount = 0;
     comboTimer = 0;
     bestCombo = 1;
-    baseSpeed = 15;
+    baseSpeed = 22;
     difficulty = 0;
     difficultyTimer = 0;
     worldSpeed = baseSpeed;
@@ -262,47 +243,6 @@ function resetRun() {
     lightningTimer = 8 + Math.random() * 14;
 }
 
-// ---------------- Input ----------------
-window.addEventListener("keydown", (e) => {
-    const typingInField = e.target && (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA");
-    if (typingInField) return; // don't hijack keys while the player is typing their name
-    if (["ArrowLeft", "a", "A"].includes(e.key)) input.left = true;
-    if (["ArrowRight", "d", "D"].includes(e.key)) input.right = true;
-    if (e.key === "Shift") input.drift = true;
-    if (e.key === "p" || e.key === "P") togglePause();
-    if (e.key === " " && state === STATE.MENU) startGame();
-});
-window.addEventListener("keyup", (e) => {
-    if (["ArrowLeft", "a", "A"].includes(e.key)) input.left = false;
-    if (["ArrowRight", "d", "D"].includes(e.key)) input.right = false;
-    if (e.key === "Shift") input.drift = false;
-});
-
-let touchActive = false,
-    touchStartX = 0,
-    touchOriginX = 0;
-renderer.domElement.addEventListener("touchstart", (e) => {
-    if (state !== STATE.PLAYING) return;
-    touchActive = true;
-    touchStartX = e.touches[0].clientX;
-    touchOriginX = car.x;
-    input.drift = true;
-}, { passive: true });
-renderer.domElement.addEventListener("touchmove", (e) => {
-    if (!touchActive) return;
-    const dx = e.touches[0].clientX - touchStartX;
-    const targetX = touchOriginX + dx * 0.02;
-    input.left = targetX < car.x - 0.05;
-    input.right = targetX > car.x + 0.05;
-}, { passive: true });
-renderer.domElement.addEventListener("touchend", () => {
-    touchActive = false;
-    input.left = false;
-    input.right = false;
-    input.drift = false;
-});
-
-// first user interaction unlocks WebAudio; kick off the menu ambience then
 function initAudioOnce() {
     Audio_.resume();
     if (state === STATE.MENU) Audio_.startMenuAmbience();
@@ -312,16 +252,63 @@ function initAudioOnce() {
 window.addEventListener("pointerdown", initAudioOnce);
 window.addEventListener("keydown", initAudioOnce);
 
-// ---------------- Menu wiring ----------------
+// ---------------- Menu & Controls Wiring ----------------
 ["companyInput", "playerInput"].forEach((id) => {
-    document.getElementById(id).addEventListener("input", () => {
-        document.getElementById("identityError").classList.add("hidden");
-    });
+    const inputEl = document.getElementById(id);
+    if (inputEl) {
+        inputEl.addEventListener("input", () => {
+            document.getElementById("identityError").classList.add("hidden");
+        });
+    }
 });
+
 document.getElementById("startBtn").addEventListener("click", () => {
     Audio_.button();
+    if (!UI.validateIdentity()) return;
+
+    // Show Controls Popup Modal first
+    state = STATE.CONTROLS;
+    UI.hideAllScreens();
+    document.getElementById("controlsModal").classList.remove("hidden");
+});
+
+document.getElementById("launchGameBtn").addEventListener("click", () => {
+    Audio_.button();
+    document.getElementById("controlsModal").classList.add("hidden");
     startGame();
 });
+
+// Sound Toggles
+function updateSoundUI() {
+    const isMuted = Audio_.isMuted();
+    const label = `SOUND: ${isMuted ? "OFF" : "ON"}`;
+    const mainValEl = document.getElementById("mainSoundToggleVal");
+    const pauseBtnEl = document.getElementById("muteBtn");
+
+    if (mainValEl) mainValEl.textContent = isMuted ? "OFF" : "ON";
+    if (pauseBtnEl) pauseBtnEl.textContent = label;
+}
+
+const mainSoundToggleBtn = document.getElementById("mainSoundToggleBtn");
+if (mainSoundToggleBtn) {
+    mainSoundToggleBtn.addEventListener("click", () => {
+        const nowMuted = !Audio_.isMuted();
+        Audio_.setMuted(nowMuted);
+        if (!nowMuted && state === STATE.MENU) Audio_.startMenuAmbience();
+        updateSoundUI();
+    });
+}
+
+document.getElementById("muteBtn").addEventListener("click", () => {
+    const nowMuted = !Audio_.isMuted();
+    Audio_.setMuted(nowMuted);
+    if (!nowMuted) {
+        if (state === STATE.MENU) Audio_.startMenuAmbience();
+        if (state === STATE.PLAYING && rain.active) Audio_.startRain();
+    }
+    updateSoundUI();
+});
+
 document.getElementById("pauseBtn").addEventListener("click", togglePause);
 document.getElementById("resumeBtn").addEventListener("click", togglePause);
 document.getElementById("restartFromPauseBtn").addEventListener("click", () => {
@@ -331,15 +318,6 @@ document.getElementById("restartFromPauseBtn").addEventListener("click", () => {
 document.getElementById("quitBtn").addEventListener("click", () => {
     Audio_.button();
     returnToMenu();
-});
-document.getElementById("muteBtn").addEventListener("click", (e) => {
-    const nowMuted = !Audio_.isMuted();
-    Audio_.setMuted(nowMuted);
-    if (!nowMuted) {
-        if (state === STATE.MENU) Audio_.startMenuAmbience();
-        if (state === STATE.PLAYING && rain.active) Audio_.startRain();
-    }
-    e.target.textContent = `SOUND: ${nowMuted ? "OFF" : "ON"}`;
 });
 document.getElementById("restartBtn").addEventListener("click", () => {
     Audio_.button();
@@ -353,21 +331,6 @@ document.getElementById("exportCsvBtn").addEventListener("click", () => {
     Audio_.button();
     Storage.exportCSV();
 });
-
-const timeToggleBtn = document.getElementById("timeToggleBtn");
-const timeToggleVal = document.getElementById("timeToggleVal");
-
-function refreshTimeToggleLabel() {
-    if (timeToggleVal) timeToggleVal.textContent = timeOfDay === "night" ? "NIGHT" : "AFTERNOON";
-}
-if (timeToggleBtn) {
-    timeToggleBtn.addEventListener("click", () => {
-        Audio_.button();
-        applyTimeOfDay(timeOfDay === "night" ? "afternoon" : "night");
-        refreshTimeToggleLabel();
-    });
-}
-refreshTimeToggleLabel();
 
 function togglePause() {
     if (state === STATE.PLAYING) {
@@ -396,7 +359,6 @@ function returnToMenu() {
 }
 
 function startGame() {
-    if (!UI.validateIdentity()) return;
     Audio_.resume();
     resetRun();
     state = STATE.PLAYING;
@@ -405,7 +367,7 @@ function startGame() {
     UI.updateHealth(100);
     UI.updateFuel(100);
     UI.updateStats(0, 0, 0, best);
-    document.getElementById("muteBtn").textContent = `SOUND: ${Audio_.isMuted() ? "OFF" : "ON"}`;
+    updateSoundUI();
     Audio_.stopMenuAmbience();
     Audio_.startEngine();
     Audio_.startMusic();
@@ -425,8 +387,7 @@ function endGame(reason) {
     const result = Storage.submit({ company, player, score, kills, distance });
     best = result.best;
     lastSubmittedRun = { company: company.trim() || "Unknown Company", player: player.trim() || "Unknown Player", score: Math.floor(score), timestamp: null };
-    // Storage.submit assigns the timestamp internally; pull it back off the freshest run so
-    // the leaderboard can highlight exactly this run (not just any run with a matching score).
+
     const allRuns = Storage.getAllRuns();
     lastSubmittedRun.timestamp = allRuns.length ? allRuns[allRuns.length - 1].timestamp : null;
     UI.setGameOverStats({ score, kills, distance, bestCombo, reason, isNewBest: result.isNewBest });
@@ -435,17 +396,17 @@ function endGame(reason) {
     UI.showScreen("gameOverScreen");
 }
 
-// ---------------- Difficulty ----------------
+// ---------------- Progressive Speed & Difficulty ----------------
 function updateDifficulty(dt) {
     difficultyTimer += dt;
-    if (difficultyTimer >= 8) {
+    if (difficultyTimer >= 6) {
         difficultyTimer = 0;
-        difficulty = Math.min(difficulty + 1, 20);
+        difficulty = Math.min(difficulty + 1, 25);
     }
-    worldSpeed = baseSpeed + difficulty * 1.15;
+    worldSpeed = baseSpeed + difficulty * 1.45;
 }
 
-// ---------------- Combo ----------------
+// ---------------- Combo System ----------------
 function updateCombo(dt) {
     if (comboTimer > 0) {
         comboTimer -= dt;
@@ -475,12 +436,12 @@ function registerKnock(zombie) {
     Audio_.zombieKnock();
 }
 
-// ---------------- Main update ----------------
+// ---------------- Main Game Loop Update ----------------
 function update(dt) {
     updateDifficulty(dt);
 
     road.update(dt, worldSpeed);
-    car.update(dt, input, worldSpeed / (baseSpeed + 20 * 1.15));
+    car.update(dt, input, worldSpeed / (baseSpeed + 25 * 1.45));
     zombieMgr.update(dt, difficulty, worldSpeed, car.x, FAR_Z);
     obstacleMgr.update(dt, difficulty, worldSpeed, FAR_Z);
     fuelMgr.update(dt, difficulty, worldSpeed, FAR_Z);
@@ -490,9 +451,9 @@ function update(dt) {
 
     updateCombo(dt);
 
-    fuel -= (2.0 + difficulty * 0.1) * dt;
+    fuel -= (2.0 + difficulty * 0.12) * dt;
     distance += worldSpeed * dt;
-    score += dt * 2;
+    score += dt * 2.5;
 
     if (Math.random() < 0.5) {
         effects.exhaust(car.x + (Math.random() * 0.3 - 0.15), 0.3, 1.9);
@@ -557,7 +518,7 @@ function update(dt) {
     }
 }
 
-// ---------------- Chase camera ----------------
+// ---------------- Chase Camera ----------------
 const camState = { x: 0, y: 3.1, lookX: 0, fov: baseFov };
 
 function updateCamera(dt) {
@@ -569,8 +530,6 @@ function updateCamera(dt) {
     camState.lookX += (car.x - camState.lookX) * Math.min(1, dt * 8);
 
     if (state === STATE.PLAYING) {
-        // tiny continuous rumble that grows gently with speed — an extra,
-        // subtle "you're going faster" cue on top of the vignette/FOV/engine pitch
         effects.addShake(speedT * 0.004);
     }
     const shake = state === STATE.PLAYING ? effects.getShakeOffset(dt) : { x: 0, y: 0 };
@@ -584,7 +543,7 @@ function updateCamera(dt) {
     camera.fov = camState.fov;
     camera.updateProjectionMatrix();
 
-    moon.target.position.set(car.x, 0, -10);
+    sun.target.position.set(car.x, 0, -10);
 }
 
 // ---------------- Render / Loop ----------------
@@ -605,11 +564,9 @@ function loop(now) {
     requestAnimationFrame(loop);
 }
 
-// initial idle camera framing before first game
 camera.position.set(0, 2.75, 6.4);
 camera.lookAt(0, 1.2, -14);
-moon.target.position.set(0, 0, -10);
+sun.target.position.set(0, 0, -10);
 
 UI.hideLoading();
 requestAnimationFrame(loop);
-// force-redeploy??

@@ -1,10 +1,8 @@
 /**
  * effects.js
  * -----------------------------------------------------------------------
- * Fire barrel scenery (recycled like buildings), short-lived particle
- * bursts for zombie gore / collision sparks / exhaust, a screen-shake
- * helper that game.js applies to the chase camera, and an atmospheric
- * rain system used during gameplay.
+ * Scenery barrels, short-lived particle bursts for zombie gore / collision 
+ * sparks / exhaust, camera screen-shake, and cosmetic rain system.
  * -----------------------------------------------------------------------
  */
 import * as THREE from "../assets/js/vendor/three.module.min.js";
@@ -129,17 +127,36 @@ export class Effects {
         this.particles.push(p);
     }
 
+    // High Impact Blood & Gore Explosion
     gore(x, y, z) {
-        for (let i = 0; i < 12; i++) {
+        this.addShake(0.22); // Impact Screen Shake
+
+        // Crimson Blood Splatter Particles
+        for (let i = 0; i < 18; i++) {
             const angle = Math.random() * Math.PI * 2;
-            const speed = 1.5 + Math.random() * 3.5;
-            this._spawn(x, y + 1, z, {
+            const speed = 2.0 + Math.random() * 4.5;
+            this._spawn(x, y + 0.8, z, {
                 vx: Math.cos(angle) * speed,
                 vz: Math.sin(angle) * speed,
-                vy: 2 + Math.random() * 2.5,
-                life: 0.4 + Math.random() * 0.35,
-                size: 0.04 + Math.random() * 0.05,
-                color: Math.random() < 0.7 ? 0x6b8f2f : 0x3d5a1f,
+                vy: 2.5 + Math.random() * 3.5,
+                life: 0.45 + Math.random() * 0.3,
+                size: 0.05 + Math.random() * 0.06,
+                color: Math.random() < 0.7 ? 0x8a0f0f : 0x540808,
+                gravity: -8,
+            });
+        }
+
+        // Flying Debris Chunks
+        for (let i = 0; i < 6; i++) {
+            const angle = Math.random() * Math.PI * 2;
+            this._spawn(x, y + 0.5, z, {
+                vx: Math.cos(angle) * 1.8,
+                vz: Math.sin(angle) * 1.8,
+                vy: 1.5 + Math.random() * 2,
+                life: 0.35 + Math.random() * 0.2,
+                size: 0.08 + Math.random() * 0.04,
+                color: 0x3d4a2a,
+                gravity: -7,
             });
         }
     }
@@ -199,12 +216,6 @@ export class Effects {
     }
 }
 
-/**
- * Rain — atmospheric weather layer made of short falling streak lines.
- * Purely cosmetic: it doesn't touch gameplay, road, or collision at all.
- * Kept deliberately sparse/subtle so it never obscures the road, car,
- * zombies, obstacles, or fuel tanks.
- */
 export class Rain {
     constructor(scene) {
         this.scene = scene;
@@ -212,7 +223,7 @@ export class Rain {
         this.active = false;
         this.spread = 15;
 
-        const positions = new Float32Array(this.count * 6); // 2 points per streak line
+        const positions = new Float32Array(this.count * 6);
         this.velocities = new Float32Array(this.count);
         this.gustPhase = Math.random() * Math.PI * 2;
 
@@ -272,6 +283,6 @@ export class Rain {
             }
         }
         this.lines.geometry.attributes.position.needsUpdate = true;
-        this.group.position.x = 0; // drops already carry carX offset when respawned
+        this.group.position.x = 0;
     }
 }

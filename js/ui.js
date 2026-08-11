@@ -1,7 +1,7 @@
 /**
  * ui.js
  * -----------------------------------------------------------------------
- * DOM-side HUD and screen management.
+ * DOM-side HUD, screen management, and modern arcade Kill Streak / Combo popup.
  * -----------------------------------------------------------------------
  */
 export const UI = {
@@ -59,28 +59,34 @@ export const UI = {
         el.dataset.built = "1";
     },
 
-    hideLoading() { this.els.loadingScreen.classList.add("hidden"); },
+    hideLoading() {
+        if (this.els.loadingScreen) this.els.loadingScreen.classList.add("hidden");
+    },
 
-    showHud(show) { this.els.hud.classList.toggle("hidden", !show); },
+    showHud(show) {
+        if (this.els.hud) this.els.hud.classList.toggle("hidden", !show);
+    },
 
     updateHealth(pct) {
+        if (!this.els.healthFill) return;
         this.els.healthFill.style.width = `${Math.max(0, Math.min(100, pct))}%`;
         this.els.healthFill.style.filter = pct < 25 ? "brightness(1.3) saturate(1.4)" : "none";
     },
 
     updateFuel(pct) {
+        if (!this.els.fuelFill) return;
         this.els.fuelFill.style.width = `${Math.max(0, Math.min(100, pct))}%`;
     },
 
     updateStats(score, kills, distanceMeters, best) {
-        this.els.scoreVal.textContent = Math.floor(score).toLocaleString();
-        this.els.killsVal.textContent = kills;
-        this.els.distVal.textContent = `${Math.floor(distanceMeters)}m`;
-        this.els.bestVal.textContent = Math.floor(best).toLocaleString();
+        if (this.els.scoreVal) this.els.scoreVal.textContent = Math.floor(score).toLocaleString();
+        if (this.els.killsVal) this.els.killsVal.textContent = kills;
+        if (this.els.distVal) this.els.distVal.textContent = `${Math.floor(distanceMeters)}m`;
+        if (this.els.bestVal) this.els.bestVal.textContent = Math.floor(best).toLocaleString();
     },
 
     setSpeedVignette(intensity) {
-        // intensity 0..1 — subtle dark vignette that tightens at high speed
+        if (!this.els.speedFx) return;
         const blur = 40 + intensity * 60;
         const spread = 10 + intensity * 40;
         this.els.speedFx.style.boxShadow = `inset 0 0 ${blur}px ${spread}px rgba(0,0,0,${0.15 + intensity * 0.35})`;
@@ -104,42 +110,80 @@ export const UI = {
         });
     },
 
-    showCombo(text) {
+    // Modern Arcade Kill Streak & Combo Popup
+    showCombo(countOrText, points = 0) {
         const el = this.els.comboPopup;
-        el.textContent = text;
+        if (!el) return;
+
+        let title = "ZOMBIE KILL!";
+        let colorClass = "combo-tier-1";
+
+        if (typeof countOrText === "number") {
+            const count = countOrText;
+            if (count >= 10) {
+                title = `UNSTOPPABLE! x${count} (+${points})`;
+                colorClass = "combo-tier-4";
+            } else if (count >= 6) {
+                title = `ZOMBIE SLAYER! x${count} (+${points})`;
+                colorClass = "combo-tier-3";
+            } else if (count >= 3) {
+                title = `KILL STREAK! x${count} (+${points})`;
+                colorClass = "combo-tier-2";
+            } else {
+                title = `${count}x COMBO! (+${points})`;
+                colorClass = "combo-tier-1";
+            }
+        } else {
+            title = countOrText;
+        }
+
+        el.textContent = title;
+        el.className = `combo-popup ${colorClass}`;
         el.classList.remove("hidden");
+
+        // Restart animation bounce
         el.style.animation = "none";
         void el.offsetWidth;
-        el.style.animation = "";
+        el.style.animation = "comboPopAnim 0.75s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards";
+
         clearTimeout(this._comboTimeout);
-        this._comboTimeout = setTimeout(() => el.classList.add("hidden"), 700);
+        this._comboTimeout = setTimeout(() => {
+            el.classList.add("hidden");
+        }, 800);
     },
 
     showScreen(name) {
         const screens = ["startScreen", "pauseScreen", "gameOverScreen"];
-        for (const s of screens) this.els[s].classList.toggle("hidden", s !== name);
+        for (const s of screens) {
+            if (this.els[s]) this.els[s].classList.toggle("hidden", s !== name);
+        }
     },
 
     hideAllScreens() {
-        ["startScreen", "pauseScreen", "gameOverScreen"].forEach((s) => this.els[s].classList.add("hidden"));
+        const screens = ["startScreen", "pauseScreen", "gameOverScreen"];
+        screens.forEach((s) => {
+            if (this.els[s]) this.els[s].classList.add("hidden");
+        });
     },
 
-    setStartBest(best) { this.els.startBest.textContent = Math.floor(best).toLocaleString(); },
+    setStartBest(best) {
+        if (this.els.startBest) this.els.startBest.textContent = Math.floor(best).toLocaleString();
+    },
 
     setGameOverStats({ score, kills, distance, bestCombo, reason, isNewBest }) {
-        this.els.gameOverReason.textContent = reason;
-        this.els.finalScore.textContent = Math.floor(score).toLocaleString();
-        this.els.finalKills.textContent = kills;
-        this.els.finalDist.textContent = `${Math.floor(distance)}m`;
-        this.els.finalCombo.textContent = `x${bestCombo}`;
-        this.els.newBest.classList.toggle("hidden", !isNewBest);
+        if (this.els.gameOverReason) this.els.gameOverReason.textContent = reason;
+        if (this.els.finalScore) this.els.finalScore.textContent = Math.floor(score).toLocaleString();
+        if (this.els.finalKills) this.els.finalKills.textContent = kills;
+        if (this.els.finalDist) this.els.finalDist.textContent = `${Math.floor(distance)}m`;
+        if (this.els.finalCombo) this.els.finalCombo.textContent = `x${bestCombo}`;
+        if (this.els.newBest) this.els.newBest.classList.toggle("hidden", !isNewBest);
     },
 
     setLeaderboard(topScores, justPlayed) {
         const el = this.els.leaderboardList;
         if (!el) return;
         el.innerHTML = "";
-        if (!topScores.length) {
+        if (!topScores || !topScores.length) {
             const empty = document.createElement("div");
             empty.className = "lb-empty";
             empty.textContent = "No runs recorded yet.";
@@ -177,9 +221,11 @@ export const UI = {
 
     // ---------------- Player identity (Company / Player name) ----------------
     getIdentity() {
+        const compEl = this.els.companyInput;
+        const playEl = this.els.playerInput;
         return {
-            company: (this.els.companyInput?.value || "").trim(),
-            player: (this.els.playerInput?.value || "").trim(),
+            company: (compEl && compEl.value ? compEl.value : "").trim(),
+            player: (playEl && playEl.value ? playEl.value : "").trim(),
         };
     },
 
@@ -196,7 +242,7 @@ export const UI = {
         }
         if (!ok) {
             const target = company.length === 0 ? this.els.companyInput : this.els.playerInput;
-            target?.focus();
+            if (target) target.focus();
         }
         return ok;
     },
