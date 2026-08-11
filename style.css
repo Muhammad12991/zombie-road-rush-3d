@@ -575,9 +575,13 @@ kbd {
   font-size: 14px;
   letter-spacing: 2px;
   animation: comboPop 1.4s ease-in-out infinite;
-  text-align: center; /* Yeh text ko centre karega */
-  width: 100%;       /* Yeh poori width lega taake centre align kaam kare */
-  display: block;    /* Yeh block element banayega */
+  text-align: center;
+  display: block;
+  width: 100%;
+  position: relative; /* Container ke andar lock karne ke liye */
+  left: 0;
+  right: 0;
+  margin: 5px auto;   /* Darmiyan mein align karne ke liye */
 }
 
 /* ---------------- Leaderboard (feature: end game leaderboard) ---------------- */
