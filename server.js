@@ -2,10 +2,8 @@ const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
 const QRCode = require('qrcode');
-const cors = require('cors');
 
 const app = express();
-app.use(cors()); // Vercel ko allow karne ke liye
 const server = http.createServer(app);
 
 const io = new Server(server, {
@@ -23,13 +21,12 @@ io.on('connection', (socket) => {
 
     // 1. PC Registers and Creates a Unique Room
     socket.on('registerPC', () => {
-        const roomId = Math.random().toString(36).substring(2, 8); // Generate random 6-character ID
+        const roomId = Math.random().toString(36).substring(2, 8);
         socket.join(roomId);
         socket.roomId = roomId;
 
-        // Jab hum isay Render par host karenge toh RENDER_EXTERNAL_URL khud ba khud lag jayega
-        const backendUrl = process.env.RENDER_EXTERNAL_URL || `http://localhost:${PORT}`;
-        const mobileUrl = `${backendUrl}/controller.html?room=${roomId}`;
+        // YAHAN VERCEL KA LINK LAGA DIYA HAI TAAKE SCAN KARNE PAR GAME KHULE
+        const mobileUrl = `https://zombie-road-rush-3d.vercel.app/controller.html?room=${roomId}`;
 
         QRCode.toDataURL(mobileUrl, { color: { dark: '#000000', light: '#ffffff' } }, (err, url) => {
             if (!err) socket.emit('qrCode', url);

@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ZR Controller</title>
     <script src="https://zombie-road-rush-3d.onrender.com/socket.io/socket.io.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;800&display=swap" rel="stylesheet">
@@ -16,6 +16,7 @@
             flex-direction: column;
             height: 100vh;
             overflow: hidden;
+            -webkit-user-select: none;
             user-select: none;
             touch-action: none;
             -webkit-touch-callout: none;
@@ -150,11 +151,16 @@
     </div>
 
     <script>
-        // Yahan par humne Render ka live URL set kar diya hai
+        // URL se room ID nikalna
+        const urlParams = new URLSearchParams(window.location.search);
+        const roomId = urlParams.get('room');
+
         const socket = io('https://zombie-road-rush-3d.onrender.com');
         const statusEl = document.getElementById('status');
 
-        socket.emit('registerMobile');
+        // Server ko room ID bhejna
+        socket.emit('registerMobile', roomId);
+
         socket.on('connectedToPC', () => {
             statusEl.innerText = "CONNECTED";
             statusEl.style.color = "#00ffff";
@@ -169,6 +175,7 @@
             btn.addEventListener('touchstart', (e) => {
                 e.preventDefault();
                 socket.emit('mobileInput', {
+                    room: roomId, // Yahan room ID lagaya taake car theek se drift kare
                     btn: btn.dataset.btn,
                     state: true
                 });
@@ -176,6 +183,7 @@
             ['touchend', 'touchcancel'].forEach(evt => btn.addEventListener(evt, (e) => {
                 e.preventDefault();
                 socket.emit('mobileInput', {
+                    room: roomId,
                     btn: btn.dataset.btn,
                     state: false
                 });
