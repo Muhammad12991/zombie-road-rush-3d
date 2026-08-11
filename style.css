@@ -564,19 +564,23 @@ kbd {
   color: var(--bone-dim);
 }
 
-.final-stat b {
-  font-family: var(--mono-font);
-  font-size: 20px;
-  color: var(--bone);
+.final-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* 4 columns barabar */
+    gap: 10px;
+    width: 100%;
+    max-width: 400px; /* Stats ki width limit */
+    margin: 0 auto;   /* Isay screen ke centre mein le aayega */
 }
 
 .new-high {
-  color: var(--amber);
-  font-size: 14px;
-  letter-spacing: 2px;
-  animation: comboPop 1.4s ease-in-out infinite;
-  display: inline-block;
-  margin: 10px auto;
+    grid-column: span 4; /* Poori line le lega */
+    text-align: center;
+    color: var(--amber);
+    font-size: 14px;
+    letter-spacing: 2px;
+    margin-top: 15px;
+    animation: comboPop 1.4s ease-in-out infinite;
 }
 
 /* ---------------- Leaderboard (feature: end game leaderboard) ---------------- */

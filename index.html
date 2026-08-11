@@ -44,6 +44,12 @@
             letter-spacing: 1px;
             text-transform: uppercase;
         }
+
+        .new-high {
+            grid-column: span 4;
+            text-align: center;
+            margin-top: 10px;
+        }
     </style>
     <!-- WebSocket Library for Mobile Controller -->
     <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
@@ -163,9 +169,11 @@
                 <div class="final-stat"><span>Zombies Killed</span><b id="finalKills">0</b></div>
                 <div class="final-stat"><span>Distance</span><b id="finalDist">0m</b></div>
                 <div class="final-stat"><span>Best Combo</span><b id="finalCombo">x1</b></div>
-            </div>
-            <div class="stat-center-wrap" style="width: 100%; text-align: center;">
-                <div id="newBest" class="new-high hidden">NEW BEST SCORE!</div>
+
+                <!-- Yahan dalne se yeh stats wali width lega -->
+                <div id="newBest" class="new-high hidden">
+                    NEW BEST SCORE!
+                </div>
             </div>
             <div id="leaderboardWrap" class="leaderboard-wrap">
                 <div class="lb-title">TOP 10</div>
