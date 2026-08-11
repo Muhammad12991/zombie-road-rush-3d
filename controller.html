@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ZR Controller</title>
+    <script src="/socket.io/socket.io.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            background: #050205;
+            font-family: 'Montserrat', sans-serif;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+            user-select: none;
+            touch-action: none;
+            -webkit-touch-callout: none;
+        }
+        /* Updated Status Bar with Pause Button */
+        
+        .status-bar {
+            padding: 8px 15px;
+            background: #111;
+            color: #ff4444;
+            letter-spacing: 2px;
+            font-size: 0.9rem;
+            font-weight: 800;
+            border-bottom: 2px solid #222;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .btn-pause {
+            width: 50px;
+            height: 35px;
+            background: #333;
+            border: 2px solid #555;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.1s;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+        
+        .btn-pause:active {
+            background: #555;
+            border-color: #fff;
+            transform: scale(0.90);
+        }
+        
+        .controls {
+            display: flex;
+            flex: 1;
+            padding: 20px;
+            justify-content: space-between;
+            align-items: center;
+        }
+        /* Left side: DRIFT (SHIFT) */
+        
+        .left-zone {
+            display: flex;
+            height: 100%;
+            align-items: center;
+        }
+        
+        .btn-drift {
+            width: 140px;
+            height: 75%;
+            max-height: 250px;
+            background: rgba(255, 0, 0, 0.05);
+            border: 3px solid #660000;
+            border-radius: 20px;
+            color: #ff4444;
+            font-size: 1.8rem;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            transition: 0.1s;
+            box-shadow: 0 0 15px rgba(255, 0, 0, 0.1);
+            line-height: 1.2;
+        }
+        
+        .btn-drift:active {
+            background: rgba(255, 0, 0, 0.3);
+            border-color: #ff0000;
+            color: #fff;
+            transform: scale(0.95);
+            box-shadow: 0 0 30px rgba(255, 0, 0, 0.5);
+        }
+        /* Right side: STEERING (SQUARE BUTTONS) */
+        
+        .right-zone {
+            display: flex;
+            gap: 20px;
+            justify-content: flex-end;
+            align-items: center;
+        }
+        
+        .btn-steer {
+            width: 100px;
+            height: 100px;
+            background: rgba(0, 255, 255, 0.05);
+            border: 3px solid #006666;
+            border-radius: 20px;
+            color: #00ffff;
+            font-size: 3rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.1s;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.1);
+        }
+        
+        .btn-steer:active {
+            background: rgba(0, 255, 255, 0.3);
+            border-color: #00ffff;
+            color: #fff;
+            transform: scale(0.95);
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="status-bar">
+        <span id="status">DISCONNECTED</span>
+        <div class="btn-pause" data-btn="pause">❚❚</div>
+    </div>
+    <div class="controls">
+        <!-- Left Side: Drift (Shift) -->
+        <div class="left-zone">
+            <div class="btn-drift" data-btn="drift">SHIFT<br>(DRIFT)</div>
+        </div>
+
+        <!-- Right Side: Square Steering -->
+        <div class="right-zone">
+            <div class="btn-steer" data-btn="left">◀</div>
+            <div class="btn-steer" data-btn="right">▶</div>
+        </div>
+    </div>
+
+    <script>
+        const socket = io();
+        const statusEl = document.getElementById('status');
+
+        socket.emit('registerMobile');
+        socket.on('connectedToPC', () => {
+            statusEl.innerText = "CONNECTED";
+            statusEl.style.color = "#00ffff";
+        });
+        socket.on('disconnect', () => {
+            statusEl.innerText = "DISCONNECTED";
+            statusEl.style.color = "#ff4444";
+        });
+
+        const buttons = document.querySelectorAll('[data-btn]');
+        buttons.forEach(btn => {
+            btn.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                socket.emit('mobileInput', {
+                    btn: btn.dataset.btn,
+                    state: true
+                });
+            });
+            ['touchend', 'touchcancel'].forEach(evt => btn.addEventListener(evt, (e) => {
+                e.preventDefault();
+                socket.emit('mobileInput', {
+                    btn: btn.dataset.btn,
+                    state: false
+                });
+            }));
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Zombie Road Rush 3D</title>
+    <link rel="stylesheet" href="style.css" />
+    <style>
+        .qr-container {
+            position: absolute;
+            right: 5%;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: rgba(10, 5, 10, 0.85);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #ff0000;
+            z-index: 10;
+        }
+        
+        .qr-image {
+            width: 150px;
+            height: 150px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+        
+        .qr-copy {
+            color: #ccc;
+            font-family: sans-serif;
+            font-size: 0.9rem;
+            text-align: center;
+            margin: 0;
+        }
+        
+        .qr-status {
+            margin-top: 10px;
+            color: #ff4444;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+    </style>
+    <!-- WebSocket Library for Mobile Controller -->
+    <script src="/socket.io/socket.io.js"></script>
+</head>
+
+<body>
+
+    <div id="app">
+
+        <!-- ================= 3D CANVAS MOUNT ================= -->
+        <div id="viewport"></div>
+
+        <!-- ================= HUD (in-game) ================= -->
+        <div id="hud" class="hidden">
+            <div class="hud-top">
+                <div class="meter meter--health">
+                    <span class="meter-label">HEALTH</span>
+                    <div class="meter-track">
+                        <div id="healthFill" class="meter-fill fill--health"></div>
+                    </div>
+                </div>
+                <div class="meter meter--fuel">
+                    <span class="meter-label">FUEL</span>
+                    <div class="meter-track">
+                        <div id="fuelFill" class="meter-fill fill--fuel"></div>
+                    </div>
+                </div>
+                <button id="pauseBtn" class="icon-btn" aria-label="Pause">❚❚</button>
+            </div>
+
+            <div class="hud-bottom">
+                <div class="stat"><span class="stat-label">SCORE</span><span id="scoreVal" class="stat-val">0</span></div>
+                <div class="stat"><span class="stat-label">KILLS</span><span id="killsVal" class="stat-val">0</span></div>
+                <div class="stat"><span class="stat-label">DIST</span><span id="distVal" class="stat-val">0m</span></div>
+                <div class="stat stat--best"><span class="stat-label">BEST</span><span id="bestVal" class="stat-val">0</span></div>
+            </div>
+
+            <div id="comboPopup" class="combo-popup hidden"></div>
+            <div id="speedFx" class="speed-vignette"></div>
+            <div id="speedLines" class="speed-lines"></div>
+        </div>
+
+        <!-- ================= START SCREEN ================= -->
+        <div id="startScreen" class="overlay start-overlay">
+            <div class="menu-horror-bg">
+                <div class="menu-fog"></div>
+                <div class="zombie-silhouette s1"></div>
+                <div class="zombie-silhouette s2"></div>
+                <div class="zombie-silhouette s3"></div>
+            </div>
+
+            <div class="title-wrap">
+                <h1 class="title title--road">
+                    <span class="title-line title-line--top">ZOMBIE</span>
+                    <span class="title-line title-line--bottom">ROAD RUSH</span>
+                </h1>
+                <div class="title-underline"></div>
+            </div>
+
+            <div class="menu-panel">
+                <div class="menu-row menu-row--input">
+                    <input id="companyInput" class="identity-input" type="text" placeholder="COMPANY NAME" maxlength="60" autocomplete="off" />
+                </div>
+                <div class="menu-row menu-row--input">
+                    <input id="playerInput" class="identity-input" type="text" placeholder="PLAYER NAME" maxlength="60" autocomplete="off" />
+                </div>
+                <div id="identityError" class="identity-error hidden">Enter company &amp; player name to start</div>
+
+                <button id="startBtn" class="menu-row menu-row--primary">
+                    <span class="menu-row-label">START ENGINE</span>
+                    <span class="menu-row-arrow">▶</span>
+                </button>
+
+                <div class="menu-row menu-row--info">
+                    <span class="menu-row-label">BEST SCORE</span>
+                    <span class="menu-row-value" id="startBest">0</span>
+                </div>
+
+                <button id="timeToggleBtn" class="menu-row menu-row--toggle">
+                    <span class="menu-row-label">TIME OF DAY</span>
+                    <span class="menu-row-value" id="timeToggleVal">NIGHT</span>
+                </button>
+
+                <div class="menu-row menu-row--controls">
+                    <div class="ctrl-line"><kbd>&larr;</kbd><kbd>&rarr;</kbd> / <kbd>A</kbd><kbd>D</kbd> STEER</div>
+                    <div class="ctrl-line"><kbd>SHIFT</kbd> DRIFT <span class="hint">guaranteed kill</span></div>
+                    <div class="ctrl-line"><kbd>P</kbd> PAUSE</div>
+                    <div class="ctrl-line touch-only">DRAG TO STEER · HOLD TO DRIFT</div>
+                </div>
+            </div>
+
+            <p class="subtitle subtitle--tag">Abandoned city. Dead ahead. Floor it.</p>
+
+            <!-- ================= MOBILE CONTROLLER QR ================= -->
+            <div id="qr-container" class="qr-container">
+                <img id="qrImage" src="" alt="Loading QR..." class="qr-image" />
+                <p class="qr-copy">Scan to use your phone<br>as a controller</p>
+                <div id="mobileStatus" class="qr-status">WAITING...</div>
+            </div>
+        </div>
+
+        <!-- ================= PAUSE SCREEN ================= -->
+        <div id="pauseScreen" class="overlay hidden">
+            <h2 class="section-title">PAUSED</h2>
+            <button id="resumeBtn" class="primary-btn">RESUME</button>
+            <button id="restartFromPauseBtn" class="ghost-btn">RESTART</button>
+            <button id="muteBtn" class="ghost-btn">SOUND: ON</button>
+            <button id="quitBtn" class="ghost-btn">QUIT TO MENU</button>
+        </div>
+
+        <!-- ================= GAME OVER SCREEN ================= -->
+        <div id="gameOverScreen" class="overlay hidden">
+            <h2 class="section-title death">GAME OVER</h2>
+            <p id="gameOverReason" class="subtitle"></p>
+            <div class="final-stats">
+                <div class="final-stat"><span>Score</span><b id="finalScore">0</b></div>
+                <div class="final-stat"><span>Zombies Killed</span><b id="finalKills">0</b></div>
+                <div class="final-stat"><span>Distance</span><b id="finalDist">0m</b></div>
+                <div class="final-stat"><span>Best Combo</span><b id="finalCombo">x1</b></div>
+            </div>
+            <div id="newBest" class="new-high hidden"> NEW BEST SCORE!</div>
+
+            <div id="leaderboardWrap" class="leaderboard-wrap">
+                <div class="lb-title">TOP 10</div>
+                <div id="leaderboardList" class="leaderboard"></div>
+            </div>
+
+            <button id="restartBtn" class="primary-btn">DRIVE AGAIN</button>
+            <button id="menuBtn" class="ghost-btn">MAIN MENU</button>
+            <button id="exportCsvBtn" class="export-csv-btn" title="Download every recorded run as a CSV file">EXPORT ALL SCORES (CSV)</button>
+        </div>
+
+        <!-- ================= LOADING SCREEN ================= -->
+        <div id="loadingScreen" class="overlay">
+            <div class="loader-ring"></div>
+            <p class="subtitle">Loading the city...</p>
+        </div>
+
+        <!-- ================= LIGHTNING FLASH OVERLAY ================= -->
+        <div id="lightningFlash" class="lightning-flash"></div>
+
+    </div>
+
+    <script type="module" src="game.js"></script>
+</body>
+
+</html>
