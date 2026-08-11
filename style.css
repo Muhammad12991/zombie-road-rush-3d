@@ -1428,3 +1428,53 @@ kbd {
     box-shadow: 0 0 16px rgba(217, 119, 6, 0.5) !important;
     transform: scale(1.03) !important;
 }
+/* Critical Health & Fuel Screen Red Blinking Border Warning */
+#gameContainer.critical-warning::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    box-shadow: inset 0 0 50px rgba(255, 0, 0, 0.8), inset 0 0 100px rgba(255, 0, 0, 0.5);
+    border: 4px solid rgba(255, 0, 0, 0.9);
+    z-index: 999;
+    animation: criticalBlink 0.8s infinite alternate ease-in-out;
+}
+
+@keyframes criticalBlink {
+    0% {
+        opacity: 0.3;
+        box-shadow: inset 0 0 20px rgba(255, 0, 0, 0.4);
+    }
+    100% {
+        opacity: 1;
+        box-shadow: inset 0 0 60px rgba(255, 0, 0, 0.9), inset 0 0 110px rgba(255, 0, 0, 0.6);
+    }
+}
+/* --- Final Direct Override for Controls Box & Abandoned City Text --- */
+div[style*="font-size"], div, span, p {
+    /* Target any small footer or control hints */
+}
+
+/* Force larger fonts on any footer or tagline text at the bottom of menus */
+.start-screen div:last-child, 
+#startScreen div:last-child,
+.menu-screen div:last-child,
+div[class*="footer"], 
+p[class*="footer"], 
+span[class*="footer"],
+.abandoned-city, 
+div[style*="text-align: center"] {
+    font-size: 1.15rem !important;
+    letter-spacing: 2.5px !important;
+    color: #ff3333 !important;
+    font-weight: 800 !important;
+    text-shadow: 0 0 10px rgba(255, 0, 0, 0.6) !important;
+}
+
+/* Force larger styling for the controls instruction box in the menu */
+div:has(> span), .controls-box, .start-controls-box {
+    font-size: 1.1rem !important;
+}

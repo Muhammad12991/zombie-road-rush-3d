@@ -10,6 +10,7 @@ export const UI = {
     init() {
         this.els = {
             hud: document.getElementById("hud"),
+            gameContainer: document.getElementById("gameContainer"),
             healthFill: document.getElementById("healthFill"),
             fuelFill: document.getElementById("fuelFill"),
             scoreVal: document.getElementById("scoreVal"),
@@ -67,15 +68,36 @@ export const UI = {
         if (this.els.hud) this.els.hud.classList.toggle("hidden", !show);
     },
 
+    _checkCriticalWarning(healthPct, fuelPct) {
+        const container = this.els.gameContainer;
+        if (!container) return;
+        // Agar health ya fuel 30% se kam ya barabar ho jaye
+        if (healthPct <= 30 || fuelPct <= 30) {
+            container.classList.add("critical-warning");
+        } else {
+            container.classList.remove("critical-warning");
+        }
+    },
+
     updateHealth(pct) {
         if (!this.els.healthFill) return;
-        this.els.healthFill.style.width = `${Math.max(0, Math.min(100, pct))}%`;
-        this.els.healthFill.style.filter = pct < 25 ? "brightness(1.3) saturate(1.4)" : "none";
+        const clamped = Math.max(0, Math.min(100, pct));
+        this.els.healthFill.style.width = `${clamped}%`;
+        this.els.healthFill.style.filter = clamped < 25 ? "brightness(1.3) saturate(1.4)" : "none";
+
+        // Current fuel fill value ka andaza laga kar check trigger karein
+        const fuelVal = this.els.fuelFill ? parseFloat(this.els.fuelFill.style.width) || 100 : 100;
+        this._checkCriticalWarning(clamped, fuelVal);
     },
 
     updateFuel(pct) {
         if (!this.els.fuelFill) return;
-        this.els.fuelFill.style.width = `${Math.max(0, Math.min(100, pct))}%`;
+        const clamped = Math.max(0, Math.min(100, pct));
+        this.els.fuelFill.style.width = `${clamped}%`;
+
+        // Current health fill value ka andaza laga kar check trigger karein
+        const healthVal = this.els.healthFill ? parseFloat(this.els.healthFill.style.width) || 100 : 100;
+        this._checkCriticalWarning(healthVal, clamped);
     },
 
     updateStats(score, kills, distanceMeters, best) {
