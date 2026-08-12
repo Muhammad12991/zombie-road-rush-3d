@@ -18,6 +18,7 @@ import { Effects, Rain } from "./js/effects.js";
 import { Collision } from "./js/collision.js";
 import { UI } from "./js/ui.js";
 import { Storage } from "./js/storage.js";
+import { startTypewriterEffect } from "./js/ui.js";
 
 // ---------------- Renderer / Scene / Camera ----------------
 const viewport = document.getElementById("viewport");
@@ -160,7 +161,7 @@ try {
     console.warn("Socket.IO not initialized. Running offline mode.");
 }
 
-// --- Keyboard Logic (Spacebar = Drift) ---
+// --- Keyboard Logic (Spacebar = Drift / Zombie Attack) ---
 window.addEventListener("keydown", (e) => {
     const typingInField = e.target && (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA");
     if (typingInField) return;
@@ -277,7 +278,6 @@ const mainLeaderboardBtn = document.getElementById("mainLeaderboardBtn");
 if (mainLeaderboardBtn) {
     mainLeaderboardBtn.addEventListener("click", () => {
         Audio_.button();
-        // Render Top 10 inside the menu leaderboard modal using existing Storage data
         UI.setLeaderboard(Storage.getTopScores(), null, UI.els.menuLeaderboardList);
         UI.toggleMenuLeaderboard(true);
     });
@@ -383,6 +383,8 @@ function returnToMenu() {
     Audio_.stopMusic();
     Audio_.stopRain();
     Audio_.startMenuAmbience();
+    startTypewriterEffect();
+
 }
 
 function startGame() {
@@ -471,7 +473,10 @@ function update(dt) {
     car.update(dt, input, worldSpeed / (baseSpeed + 25 * 1.45));
     zombieMgr.update(dt, difficulty, worldSpeed, car.x, FAR_Z);
     obstacleMgr.update(dt, difficulty, worldSpeed, FAR_Z);
-    fuelMgr.update(dt, difficulty, worldSpeed, FAR_Z);
+
+    // Pass current distance for 500m Wrench Health Spawn
+    fuelMgr.update(dt, difficulty, worldSpeed, FAR_Z, distance);
+
     effects.update(dt);
     effects.updateFires(dt, worldSpeed, road.segmentSpan);
     rain.update(dt, worldSpeed, car.x);
@@ -518,10 +523,16 @@ function update(dt) {
         Audio_.crash();
     }
 
+    // Handled Fuel Canisters vs Wrench Health Pickups
     if (events.fuelCollected.length > 0) {
         for (const f of events.fuelCollected) {
-            fuel = Math.min(100, fuel + 28);
-            effects.sparkle(f.x, 0.5, f.z, 0xd98f30);
+            if (f.pickupType === "wrench") {
+                health = Math.min(100, health + 15); // Restore 15% Health
+                effects.sparkle(f.x, 0.5, f.z, 0xffaa00);
+            } else {
+                fuel = Math.min(100, fuel + 28); // Restore Fuel
+                effects.sparkle(f.x, 0.5, f.z, 0xd98f30);
+            }
             fuelMgr.remove(f);
         }
         Audio_.fuelPickup();

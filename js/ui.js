@@ -308,3 +308,22 @@ export const UI = {
         return ok;
     },
 };
+// Main Menu Typewriter Effect Logic
+export function startTypewriterEffect() {
+    const targetEl = document.getElementById("typewriterText");
+    if (!targetEl) return;
+
+    const fullText = "KILL 13 ZOMBIES AND COVER 1000 METERS TO WIN A MANGO";
+    targetEl.textContent = ""; // Reset before typing
+    let index = 0;
+
+    function typeNextChar() {
+        if (index < fullText.length) {
+            targetEl.textContent += fullText.charAt(index);
+            index++;
+            setTimeout(typeNextChar, 45); // Typing speed
+        }
+    }
+
+    typeNextChar();
+}

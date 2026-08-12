@@ -1,8 +1,8 @@
 /**
  * obstacles.js
  * -----------------------------------------------------------------------
- * In-lane hazards: striped barriers, burned wreckage, potholes, cones,
- * T-barriers, open manholes, fire barrels, and smoking TREE TRUNKS (fallen logs).
+ * In-lane hazards: striped barriers, burned wreckage, cones,
+ * T-barriers, TRASH CANS (overflowing with odor FX), fire barrels, and smoking TREE TRUNKS.
  * -----------------------------------------------------------------------
  */
 import * as THREE from "../assets/js/vendor/three.module.min.js";
@@ -10,11 +10,10 @@ import { curveOffset } from "./road.js";
 
 const TYPES = {
     cone: { damage: 10, halfW: 0.4, halfL: 0.4 },
-    pothole: { damage: 14, halfW: 0.8, halfL: 0.8 },
     tree_trunk: { damage: 20, halfW: 1.1, halfL: 0.5 },
     barrier: { damage: 22, halfW: 1.1, halfL: 0.3 },
     t_barrier: { damage: 26, halfW: 1.4, halfL: 0.5 },
-    manhole: { damage: 20, halfW: 0.7, halfL: 0.7 },
+    trash_can: { damage: 18, halfW: 0.65, halfL: 0.65 },
     fire_barrel: { damage: 28, halfW: 0.8, halfL: 0.8 },
     wreckage: { damage: 32, halfW: 1.0, halfL: 1.3 },
 };
@@ -61,26 +60,23 @@ function buildCone() {
 function buildTreeTrunk() {
     const group = new THREE.Group();
 
-    // Realistic Bark & Cut Wood Materials
-    const barkMat = new THREE.MeshStandardMaterial({ color: 0x3d2817, roughness: 0.95 }); // Rough Tree Bark
+    const barkMat = new THREE.MeshStandardMaterial({ color: 0x3d2817, roughness: 0.95 });
     const innerWoodMat = new THREE.MeshStandardMaterial({
         color: 0x8c6239,
         roughness: 0.8,
         emissive: 0xd97724,
-        emissiveIntensity: 0.3 // Smoldering Wood Rings Glow
+        emissiveIntensity: 0.3
     });
     const mossMat = new THREE.MeshStandardMaterial({ color: 0x2e4218, roughness: 0.9 });
 
-    // Main Fallen Tree Log (Lying Horizontally Across Lane)
     const logGeo = new THREE.CylinderGeometry(0.38, 0.42, 2.3, 12);
     const log = new THREE.Mesh(logGeo, barkMat);
-    log.rotation.z = Math.PI / 2; // Lie flat across the road
-    log.rotation.y = Math.random() * 0.3 - 0.15; // Natural slight tilt
+    log.rotation.z = Math.PI / 2;
+    log.rotation.y = Math.random() * 0.3 - 0.15;
     log.position.y = 0.38;
     log.castShadow = true;
     group.add(log);
 
-    // Inner Rings Cut Ends (Left & Right Ends of Log)
     const endGeo = new THREE.CircleGeometry(0.38, 12);
 
     const endL = new THREE.Mesh(endGeo, innerWoodMat);
@@ -93,18 +89,15 @@ function buildTreeTrunk() {
     endR.rotation.y = Math.PI / 2;
     group.add(endR);
 
-    // Broken Moss / Branch Stump detail on Log
     const stump = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.18, 0.4, 8), mossMat);
     stump.position.set(0.3, 0.65, 0.1);
     stump.rotation.x = 0.4;
     group.add(stump);
 
-    // High Visibility Amber Point Light for Smoldering Log
     const glowLight = new THREE.PointLight(0xff7700, 1.4, 4.5);
     glowLight.position.set(0, 0.8, 0);
     group.add(glowLight);
 
-    // Rising Smoldering Smoke System
     const smokeMat = new THREE.MeshBasicMaterial({ color: 0x999999, transparent: true, opacity: 0.5 });
     const smokePuffs = [];
 
@@ -187,32 +180,73 @@ function buildTBarrier() {
     return group;
 }
 
-function buildOpenManhole() {
+function buildTrashCan() {
     const group = new THREE.Group();
-    const neonRimMat = new THREE.MeshStandardMaterial({
-        color: 0x00ffff,
-        emissive: 0x00c8ff,
-        emissiveIntensity: 0.9,
-        roughness: 0.3
+
+    const canMat = new THREE.MeshStandardMaterial({
+        color: 0x4a525a,
+        roughness: 0.4,
+        metalness: 0.7
     });
-    const abyssMat = new THREE.MeshBasicMaterial({ color: 0x000000 });
 
-    const rim = new THREE.Mesh(new THREE.RingGeometry(0.5, 0.75, 18), neonRimMat);
-    rim.rotation.x = -Math.PI / 2;
-    rim.position.y = 0.01;
-    group.add(rim);
+    const garbageMat1 = new THREE.MeshStandardMaterial({ color: 0x223311, roughness: 0.9 });
+    const garbageMat2 = new THREE.MeshStandardMaterial({ color: 0x664422, roughness: 0.95 });
+    const slimeGlowMat = new THREE.MeshBasicMaterial({ color: 0x55ff00, transparent: true, opacity: 0.7 });
 
-    const pit = new THREE.Mesh(new THREE.CircleGeometry(0.5, 18), abyssMat);
-    pit.rotation.x = -Math.PI / 2;
-    pit.position.y = 0.005;
-    group.add(pit);
+    const bodyGeo = new THREE.CylinderGeometry(0.48, 0.42, 1.1, 14);
+    const body = new THREE.Mesh(bodyGeo, canMat);
+    body.position.y = 0.55;
+    body.castShadow = true;
+    group.add(body);
 
-    const lid = new THREE.Mesh(new THREE.CylinderGeometry(0.52, 0.52, 0.08, 16), neonRimMat);
-    lid.position.set(0.65, 0.04, 0.3);
-    lid.rotation.z = 0.15;
+    const handleGeo = new THREE.TorusGeometry(0.08, 0.02, 8, 12);
+    const handleL = new THREE.Mesh(handleGeo, canMat);
+    handleL.position.set(-0.5, 0.7, 0);
+    handleL.rotation.y = Math.PI / 2;
+    group.add(handleL);
+
+    const handleR = new THREE.Mesh(handleGeo, canMat);
+    handleR.position.set(0.5, 0.7, 0);
+    handleR.rotation.y = Math.PI / 2;
+    group.add(handleR);
+
+    const trashMound1 = new THREE.Mesh(new THREE.SphereGeometry(0.4, 8, 8), garbageMat1);
+    trashMound1.position.set(-0.08, 1.12, 0.05);
+    trashMound1.scale.set(1.1, 0.7, 1.0);
+    group.add(trashMound1);
+
+    const trashMound2 = new THREE.Mesh(new THREE.SphereGeometry(0.32, 8, 8), garbageMat2);
+    trashMound2.position.set(0.12, 1.18, -0.06);
+    trashMound2.scale.set(0.9, 0.8, 0.9);
+    group.add(trashMound2);
+
+    const lidGeo = new THREE.CylinderGeometry(0.52, 0.52, 0.08, 14);
+    const lid = new THREE.Mesh(lidGeo, canMat);
+    lid.position.set(0.15, 1.35, 0.05);
+    lid.rotation.z = -0.38;
+    lid.rotation.x = 0.15;
+    lid.castShadow = true;
     group.add(lid);
 
-    return group;
+    const odorParticles = [];
+    for (let i = 0; i < 5; i++) {
+        const odorPuff = new THREE.Mesh(new THREE.SphereGeometry(0.08 + Math.random() * 0.04, 6, 6), slimeGlowMat);
+        odorPuff.position.set(
+            (Math.random() - 0.5) * 0.5,
+            1.2 + Math.random() * 0.5,
+            (Math.random() - 0.5) * 0.5
+        );
+        group.add(odorPuff);
+        odorParticles.push(odorPuff);
+    }
+
+    const odorLight = new THREE.PointLight(0x44ff00, 0.9, 3.0);
+    odorLight.position.set(0, 1.3, 0);
+    group.add(odorLight);
+
+    group.add(contactShadow(0.8));
+
+    return { group, odorParticles };
 }
 
 function buildFireBarrel() {
@@ -264,42 +298,24 @@ function buildWreckage() {
     return group;
 }
 
-function buildPothole() {
-    const group = new THREE.Group();
-    const neonRimMat = new THREE.MeshStandardMaterial({
-        color: 0xff0055,
-        emissive: 0xff0055,
-        emissiveIntensity: 0.8,
-        roughness: 0.5
-    });
-    const holeMat = new THREE.MeshStandardMaterial({ color: 0x030303, roughness: 1 });
-
-    const rim = new THREE.Mesh(new THREE.RingGeometry(0.78, 0.95, 16), neonRimMat);
-    rim.rotation.x = -Math.PI / 2;
-    rim.position.y = 0.005;
-    group.add(rim);
-
-    const hole = new THREE.Mesh(new THREE.CircleGeometry(0.78, 16), holeMat);
-    hole.rotation.x = -Math.PI / 2;
-    hole.position.y = -0.02;
-    group.add(hole);
-
-    return group;
-}
-
 class Obstacle {
     constructor(x, z, type) {
         this.x = x;
         this.z = z;
         this.type = type;
-        this.def = TYPES[type];
+        this.def = TYPES[type] || TYPES.cone;
         this.hit = false;
         this.smokePuffs = null;
+        this.odorParticles = null;
 
         if (type === "tree_trunk") {
             const res = buildTreeTrunk();
             this.group = res.group;
             this.smokePuffs = res.smokePuffs;
+        } else if (type === "trash_can") {
+            const res = buildTrashCan();
+            this.group = res.group;
+            this.odorParticles = res.odorParticles;
         } else {
             switch (type) {
                 case "cone":
@@ -311,9 +327,6 @@ class Obstacle {
                 case "t_barrier":
                     this.group = buildTBarrier();
                     break;
-                case "manhole":
-                    this.group = buildOpenManhole();
-                    break;
                 case "fire_barrel":
                     this.group = buildFireBarrel();
                     break;
@@ -321,7 +334,7 @@ class Obstacle {
                     this.group = buildWreckage();
                     break;
                 default:
-                    this.group = buildPothole();
+                    this.group = buildCone();
                     break;
             }
         }
@@ -338,7 +351,6 @@ class Obstacle {
         this.group.position.z = this.z;
         this.group.position.x = this.x + curveOffset(this.z);
 
-        // Smoke Rising Effect for Tree Trunks
         if (this.smokePuffs) {
             this.smokePuffs.forEach((puff, idx) => {
                 puff.position.y += dt * (0.8 + idx * 0.2);
@@ -349,6 +361,20 @@ class Obstacle {
                     puff.position.y = 0.7;
                     puff.scale.set(1, 1, 1);
                     puff.material.opacity = 0.5;
+                }
+            });
+        }
+
+        if (this.odorParticles) {
+            this.odorParticles.forEach((p) => {
+                p.position.y += dt * 0.6;
+                p.position.x += Math.sin(p.position.y * 5) * dt * 0.1;
+                p.material.opacity -= dt * 0.25;
+
+                if (p.position.y > 2.2 || p.material.opacity <= 0) {
+                    p.position.y = 1.1;
+                    p.position.x = (Math.random() - 0.5) * 0.5;
+                    p.material.opacity = 0.7;
                 }
             });
         }
@@ -384,9 +410,9 @@ export class ObstacleManager {
     }
 
     _spawn(difficulty, farZ) {
-        const pool = ["tree_trunk", "tree_trunk", "cone", "pothole", "barrier"];
-        if (difficulty > 1) pool.push("manhole");
-        if (difficulty > 2) pool.push("t_barrier", "fire_barrel");
+        const pool = ["tree_trunk", "tree_trunk", "cone", "barrier"];
+        if (difficulty > 1) pool.push("trash_can");
+        if (difficulty > 2) pool.push("t_barrier", "fire_barrel", "trash_can");
         if (difficulty > 4) pool.push("wreckage");
 
         const type = pool[Math.floor(Math.random() * pool.length)];

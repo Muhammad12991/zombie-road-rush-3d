@@ -1,10 +1,7 @@
 /**
  * zombies.js
  * -----------------------------------------------------------------------
- * ULTRA-HORROR Canvas Sprite Zombie System:
- * 3 Creepy Variants (Dark Ghoul, Blood Slasher, Rotting Mutant), 
- * glowing sockets, blood drips, long messy hair, exposed bone details,
- * and twitchy undead motion for maximum horror vibes!
+ * ULTRA-HORROR Canvas Sprite Zombie System (Perfectly Balanced Spawn Rates)
  * -----------------------------------------------------------------------
  */
 import * as THREE from "../assets/js/vendor/three.module.min.js";
@@ -21,193 +18,193 @@ function createUltraHorrorTexture(variantIndex) {
 
     // Dark Horror Palette Variants
     const VARIANTS = [
-        { skin: "#2e3d29", jacket: "#2a221b", tie: "#8b0000", eyeGlow: "#ff0000", hair: "#0a0a0a" }, // Dark Ghoul
-        { skin: "#3b3d3a", jacket: "#14171a", tie: "#4a0000", eyeGlow: "#ff3300", hair: "#1c140d" }, // Blood Slasher
-        { skin: "#1f3322", jacket: "#382d1d", tie: "#990000", eyeGlow: "#ff0055", hair: "#0d0e14" } // Rotting Mutant
+        { skin: "#1e2b19", jacket: "#1a120b", tie: "#bb0000", eyeGlow: "#ff0000", hair: "#000000" }, // Dark Ghoul
+        { skin: "#2a2c29", jacket: "#0c0e10", tie: "#7a0000", eyeGlow: "#ff2200", hair: "#120a05" }, // Blood Slasher
+        { skin: "#132316", jacket: "#241a0d", tie: "#cc0000", eyeGlow: "#ff0044", hair: "#05060a" } // Rotting Mutant
     ];
     const v = VARIANTS[variantIndex % 3];
 
-    ctx.strokeStyle = "#050505";
-    ctx.lineWidth = 7;
+    ctx.strokeStyle = "#000000";
+    ctx.lineWidth = 8;
     ctx.lineCap = "round";
 
     // 1. Torn Trousers & Legs
-    ctx.fillStyle = "#111827";
+    ctx.fillStyle = "#090d15";
     ctx.beginPath();
-    ctx.rect(86, 320, 34, 110);
-    ctx.rect(136, 320, 32, 100);
+    ctx.rect(82, 320, 38, 110);
+    ctx.rect(136, 320, 36, 100);
     ctx.fill();
     ctx.stroke();
 
     // Bare Rotting Skin Ankle
     ctx.fillStyle = v.skin;
     ctx.beginPath();
-    ctx.rect(140, 420, 22, 42);
+    ctx.rect(140, 420, 24, 42);
     ctx.fill();
     ctx.stroke();
 
     // Bloody Muddy Shoes
-    ctx.fillStyle = "#1c120c";
+    ctx.fillStyle = "#100a06";
     ctx.beginPath();
-    ctx.ellipse(90, 448, 32, 16, 0, 0, Math.PI * 2);
-    ctx.ellipse(156, 462, 34, 17, 0, 0, Math.PI * 2);
+    ctx.ellipse(88, 448, 34, 18, 0, 0, Math.PI * 2);
+    ctx.ellipse(158, 462, 36, 18, 0, 0, Math.PI * 2);
     ctx.fill();
     ctx.stroke();
 
     // 2. Slouched Tattered Body
     ctx.fillStyle = v.jacket;
     ctx.beginPath();
-    ctx.moveTo(65, 175);
-    ctx.lineTo(190, 175);
-    ctx.lineTo(200, 335);
-    ctx.lineTo(60, 335);
+    ctx.moveTo(60, 175);
+    ctx.lineTo(195, 175);
+    ctx.lineTo(205, 335);
+    ctx.lineTo(55, 335);
     ctx.closePath();
     ctx.fill();
     ctx.stroke();
 
     // Dirty Inner Shirt
-    ctx.fillStyle = "#6b6659";
+    ctx.fillStyle = "#474338";
     ctx.beginPath();
-    ctx.moveTo(108, 175);
-    ctx.lineTo(148, 175);
-    ctx.lineTo(130, 245);
+    ctx.moveTo(104, 175);
+    ctx.lineTo(152, 175);
+    ctx.lineTo(132, 245);
     ctx.closePath();
     ctx.fill();
 
     // Blood-Soaked Tie
     ctx.fillStyle = v.tie;
     ctx.beginPath();
-    ctx.moveTo(120, 195);
-    ctx.lineTo(140, 195);
-    ctx.lineTo(145, 305);
-    ctx.lineTo(128, 315);
-    ctx.lineTo(116, 295);
+    ctx.moveTo(118, 195);
+    ctx.lineTo(142, 195);
+    ctx.lineTo(148, 305);
+    ctx.lineTo(128, 318);
+    ctx.lineTo(114, 295);
     ctx.closePath();
     ctx.fill();
     ctx.stroke();
 
     // Heavy Blood Splatters & Exposed Rib Detail
-    ctx.fillStyle = "#660000";
+    ctx.fillStyle = "#880000";
     ctx.beginPath();
-    ctx.arc(100, 255, 18, 0, Math.PI * 2);
-    ctx.arc(165, 285, 22, 0, Math.PI * 2);
-    ctx.arc(125, 300, 15, 0, Math.PI * 2);
+    ctx.arc(95, 255, 22, 0, Math.PI * 2);
+    ctx.arc(168, 285, 26, 0, Math.PI * 2);
+    ctx.arc(125, 300, 18, 0, Math.PI * 2);
     ctx.fill();
 
     // Bone Rib Detail
-    ctx.fillStyle = "#cccccc";
-    ctx.fillRect(85, 245, 18, 5);
-    ctx.fillRect(83, 260, 22, 5);
+    ctx.fillStyle = "#e6e6e6";
+    ctx.fillRect(80, 245, 22, 6);
+    ctx.fillRect(78, 262, 26, 6);
 
     // 3. Reaching Arms & Bloody Claws
     ctx.fillStyle = v.jacket;
     ctx.beginPath();
-    ctx.rect(34, 205, 38, 85);
+    ctx.rect(28, 205, 42, 85);
     ctx.fill();
     ctx.stroke();
 
     ctx.fillStyle = v.skin;
     ctx.beginPath();
-    ctx.arc(50, 305, 20, 0, Math.PI * 2);
+    ctx.arc(46, 305, 22, 0, Math.PI * 2);
     ctx.fill();
     ctx.stroke();
 
     // Long Sharp Nails / Claws
-    ctx.fillStyle = "#000000";
+    ctx.fillStyle = "#ff0000";
     ctx.beginPath();
-    ctx.moveTo(35, 315);
-    ctx.lineTo(28, 330);
-    ctx.lineTo(40, 320);
-    ctx.moveTo(48, 320);
-    ctx.lineTo(45, 338);
-    ctx.lineTo(55, 322);
+    ctx.moveTo(30, 315);
+    ctx.lineTo(22, 338);
+    ctx.lineTo(36, 322);
+    ctx.moveTo(44, 320);
+    ctx.lineTo(40, 342);
+    ctx.lineTo(52, 324);
     ctx.fill();
 
     // 4. Ultra-Scary Decayed Head
     ctx.fillStyle = v.skin;
     ctx.beginPath();
-    ctx.ellipse(130, 105, 68, 78, -0.1, 0, Math.PI * 2);
+    ctx.ellipse(130, 105, 72, 82, -0.1, 0, Math.PI * 2);
     ctx.fill();
     ctx.stroke();
 
     // Jagged Gaping Jaw with Gory Blood Drips
-    ctx.fillStyle = "#080202";
+    ctx.fillStyle = "#000000";
     ctx.beginPath();
-    ctx.ellipse(140, 145, 36, 22, 0.1, 0, Math.PI * 2);
+    ctx.ellipse(140, 148, 42, 26, 0.1, 0, Math.PI * 2);
     ctx.fill();
 
     // Intense Blood Gushing down the chin
-    ctx.fillStyle = "#800000";
+    ctx.fillStyle = "#aa0000";
     ctx.beginPath();
-    ctx.rect(120, 150, 8, 28);
-    ctx.rect(136, 155, 12, 38);
-    ctx.rect(154, 152, 7, 24);
+    ctx.rect(116, 150, 10, 35);
+    ctx.rect(134, 155, 14, 45);
+    ctx.rect(156, 152, 9, 30);
     ctx.fill();
 
     // Sharp Broken Yellow Teeth
-    ctx.fillStyle = "#d9ccab";
-    ctx.fillRect(116, 128, 8, 14);
-    ctx.fillRect(142, 130, 10, 12);
-    ctx.fillRect(128, 148, 9, 12);
-    ctx.fillRect(152, 146, 8, 10);
+    ctx.fillStyle = "#f0e2b8";
+    ctx.fillRect(112, 126, 10, 16);
+    ctx.fillRect(140, 128, 12, 14);
+    ctx.fillRect(124, 150, 10, 14);
+    ctx.fillRect(152, 148, 9, 12);
 
     // 5. Terrifying Glowing Eyes (Evil Undead Look)
     // Left Eye
-    ctx.fillStyle = "#050505";
+    ctx.fillStyle = "#000000";
     ctx.beginPath();
-    ctx.arc(102, 82, 28, 0, Math.PI * 2);
+    ctx.arc(98, 80, 30, 0, Math.PI * 2);
     ctx.fill();
     ctx.fillStyle = v.eyeGlow;
     ctx.beginPath();
-    ctx.arc(102, 82, 18, 0, Math.PI * 2);
+    ctx.arc(98, 80, 20, 0, Math.PI * 2);
     ctx.fill();
     ctx.fillStyle = "#ffffff";
     ctx.beginPath();
-    ctx.arc(100, 80, 5, 0, Math.PI * 2);
+    ctx.arc(96, 78, 6, 0, Math.PI * 2);
     ctx.fill();
 
     // Right Eye
-    ctx.fillStyle = "#050505";
+    ctx.fillStyle = "#000000";
     ctx.beginPath();
-    ctx.arc(158, 88, 24, 0, Math.PI * 2);
+    ctx.arc(162, 86, 26, 0, Math.PI * 2);
     ctx.fill();
     ctx.fillStyle = v.eyeGlow;
     ctx.beginPath();
-    ctx.arc(158, 88, 15, 0, Math.PI * 2);
+    ctx.arc(162, 86, 17, 0, Math.PI * 2);
     ctx.fill();
     ctx.fillStyle = "#ffffff";
     ctx.beginPath();
-    ctx.arc(156, 86, 4, 0, Math.PI * 2);
+    ctx.arc(160, 84, 5, 0, Math.PI * 2);
     ctx.fill();
 
     // Scars on Face
-    ctx.strokeStyle = "#400000";
-    ctx.lineWidth = 4;
+    ctx.strokeStyle = "#550000";
+    ctx.lineWidth = 5;
     ctx.beginPath();
-    ctx.moveTo(85, 95);
-    ctx.lineTo(110, 120);
-    ctx.moveTo(150, 65);
-    ctx.lineTo(170, 80);
+    ctx.moveTo(80, 95);
+    ctx.lineTo(112, 122);
+    ctx.moveTo(148, 62);
+    ctx.lineTo(172, 82);
     ctx.stroke();
 
     // 6. Wild Messy Long Horror Hair
     ctx.strokeStyle = v.hair;
-    ctx.lineWidth = 6;
+    ctx.lineWidth = 7;
     ctx.fillStyle = v.hair;
 
     ctx.beginPath();
-    ctx.moveTo(75, 80);
-    ctx.quadraticCurveTo(50, 130, 45, 190);
-    ctx.moveTo(90, 50);
-    ctx.quadraticCurveTo(65, 110, 60, 170);
-    ctx.moveTo(110, 30);
-    ctx.quadraticCurveTo(100, 5, 85, 0);
-    ctx.moveTo(130, 25);
-    ctx.quadraticCurveTo(135, 0, 145, -5);
-    ctx.moveTo(150, 30);
-    ctx.quadraticCurveTo(175, 50, 190, 110);
-    ctx.moveTo(165, 50);
-    ctx.quadraticCurveTo(195, 100, 210, 180);
+    ctx.moveTo(70, 80);
+    ctx.quadraticCurveTo(45, 130, 40, 195);
+    ctx.moveTo(88, 50);
+    ctx.quadraticCurveTo(60, 110, 55, 175);
+    ctx.moveTo(110, 28);
+    ctx.quadraticCurveTo(95, 0, 80, -5);
+    ctx.moveTo(132, 22);
+    ctx.quadraticCurveTo(138, -5, 148, -10);
+    ctx.moveTo(154, 28);
+    ctx.quadraticCurveTo(180, 50, 195, 115);
+    ctx.moveTo(168, 48);
+    ctx.quadraticCurveTo(200, 100, 215, 185);
     ctx.stroke();
 
     return new THREE.CanvasTexture(canvas);
@@ -233,9 +230,9 @@ function buildUltraHorrorSprite() {
         side: THREE.DoubleSide
     });
 
-    const planeGeo = new THREE.PlaneGeometry(1.65, 2.75);
+    const planeGeo = new THREE.PlaneGeometry(1.75, 2.9);
     const sprite = new THREE.Mesh(planeGeo, mat);
-    sprite.position.y = 1.32;
+    sprite.position.y = 1.38;
     sprite.castShadow = true;
     group.add(sprite);
 
@@ -249,10 +246,10 @@ class Zombie {
         this.homeX = x;
         this.targetX = x;
         this.behavior = behavior;
-        this.speedX = 0.65 + Math.random() * 0.95;
+        this.speedX = 0.7 + Math.random() * 0.9;
         this.swayPhase = Math.random() * Math.PI * 2;
-        this.swaySpeed = 1.2 + Math.random() * 1.5;
-        this.swayAmount = behavior === "shamble" ? 0.38 : 0.22;
+        this.swaySpeed = 1.3 + Math.random() * 1.4;
+        this.swayAmount = behavior === "shamble" ? 0.38 : 0.25;
         this.wanderTimer = 0;
         this.wanderDir = 1;
         this.walkPhase = Math.random() * Math.PI * 2;
@@ -270,7 +267,7 @@ class Zombie {
     }
 
     get bounds() {
-        return { x: this.x, z: this.z, halfW: 0.35, halfL: 0.35 };
+        return { x: this.x, z: this.z, halfW: 0.4, halfL: 0.4 };
     }
 
     stagger() {
@@ -291,8 +288,8 @@ class Zombie {
 
         if (this.state === "dying") {
             this.dyingTimer -= dt;
-            this.group.rotation.z += dt * 9;
-            this.group.position.y -= dt * 1.6;
+            this.group.rotation.z += dt * 10;
+            this.group.position.y -= dt * 1.8;
             const t = Math.max(0, this.dyingTimer / 0.35);
             this.group.scale.set(t, t, t);
             this._sync();
@@ -305,7 +302,7 @@ class Zombie {
             this.z += this.staggerVZ * dt * 0.4;
             this.staggerVX *= 1 - dt * 3;
             this.staggerVZ *= 1 - dt * 3;
-            this.group.rotation.z = Math.sin(this.staggerTimer * 20) * 0.35;
+            this.group.rotation.z = Math.sin(this.staggerTimer * 22) * 0.4;
             if (this.staggerTimer <= 0) {
                 this.state = "alive";
                 this.group.rotation.z = 0;
@@ -316,7 +313,7 @@ class Zombie {
         }
 
         // Alive AI Behavior
-        this.walkPhase += dt * 6.5;
+        this.walkPhase += dt * 7.5;
         this.swayPhase += dt * this.swaySpeed;
         const sway = Math.sin(this.swayPhase) * this.swayAmount;
 
@@ -327,7 +324,7 @@ class Zombie {
             case "wander":
                 this.wanderTimer -= dt;
                 if (this.wanderTimer <= 0) {
-                    this.wanderTimer = 1.5 + Math.random() * 2;
+                    this.wanderTimer = 1.2 + Math.random() * 1.8;
                     this.wanderDir = Math.random() < 0.5 ? -1 : 1;
                 }
                 this.homeX += this.wanderDir * this.speedX * dt;
@@ -342,12 +339,12 @@ class Zombie {
                 }
         }
 
-        this.x += (this.targetX - this.x) * Math.min(1, dt * 5);
+        this.x += (this.targetX - this.x) * Math.min(1, dt * 6);
 
         // Creepy Twitchy Undead Wobble Motion
-        const wobble = Math.sin(this.walkPhase) * 0.14;
+        const wobble = Math.sin(this.walkPhase) * 0.18;
         this.parts.sprite.rotation.z = wobble;
-        this.parts.sprite.position.y = 1.32 + Math.abs(Math.sin(this.walkPhase * 2.2)) * 0.09;
+        this.parts.sprite.position.y = 1.38 + Math.abs(Math.sin(this.walkPhase * 2.5)) * 0.12;
 
         this._sync();
     }
@@ -371,7 +368,7 @@ export class ZombieManager {
     reset() {
         for (const z of this.list) this.scene.remove(z.group);
         this.list = [];
-        this.spawnTimer = 1.2;
+        this.spawnTimer = 0.8;
         this.hitStreak = 0;
         this.streakTimer = 0;
     }
@@ -397,7 +394,8 @@ export class ZombieManager {
     update(dt, difficulty, worldSpeed, playerX, farZ) {
         this.spawnTimer -= dt;
         if (this.spawnTimer <= 0) {
-            this.spawnTimer = Math.max(0.4, 1.5 - difficulty * 0.09) * (0.7 + Math.random() * 0.6);
+            // Sweet Spot: Smooth Spawn Intervals (0.6s - 1.2s)
+            this.spawnTimer = Math.max(0.6, 1.2 - difficulty * 0.08) * (0.7 + Math.random() * 0.4);
             this._spawnGroup(difficulty, farZ);
         }
 
@@ -413,13 +411,17 @@ export class ZombieManager {
     }
 
     _spawnGroup(difficulty, farZ) {
-        const clusterChance = Math.min(0.15 + difficulty * 0.04, 0.45);
+        // Balanced Limit: Up to 12 active zombies on screen
+        if (this.list.length >= 12) return;
+
+        // Moderate Cluster Chance: 2-3 Zombies in a group
+        const clusterChance = Math.min(0.25 + difficulty * 0.05, 0.50);
         const isCluster = Math.random() < clusterChance;
         const count = isCluster ? 2 + Math.floor(Math.random() * 2) : 1;
         const laneBase = Math.floor(Math.random() * this.road.laneCount);
 
         for (let i = 0; i < count; i++) {
-            const lurchChance = Math.min(0.15 + difficulty * 0.05, 0.55);
+            const lurchChance = Math.min(0.25 + difficulty * 0.05, 0.55);
             const r = Math.random();
             const behavior = r < lurchChance ? "lurch" : r < lurchChance + 0.35 ? "wander" : "shamble";
 
@@ -429,10 +431,10 @@ export class ZombieManager {
                 x = side * (this.road.roadHalfWidth + 1 + Math.random() * 2);
             } else {
                 const lane = isCluster ? Math.min(this.road.laneCount - 1, laneBase + (i % 2)) : Math.floor(Math.random() * this.road.laneCount);
-                x = this.road.laneCenterX(lane) + (Math.random() * 1 - 0.5);
+                x = this.road.laneCenterX(lane) + (Math.random() * 0.8 - 0.4);
             }
 
-            const z = farZ - i * 3 - Math.random() * 4;
+            const z = farZ - i * 3.0 - Math.random() * 3;
             const zombie = new Zombie(x, z, behavior);
             this.scene.add(zombie.group);
             this.list.push(zombie);

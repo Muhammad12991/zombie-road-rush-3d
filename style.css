@@ -2267,3 +2267,99 @@ div:has(> span), .controls-box, .start-controls-box {
         max-height: 40vh !important;
     }
 }
+/* ==========================================================================
+   SCORE TEXT & BUTTON OVERFLOW CUTOFF FIX
+   ========================================================================== */
+
+/* 1. Prevent Container Clipping on Right Side */
+.leaderboard-modal-card {
+    padding: 32px 28px !important;
+    overflow: visible !important;
+}
+
+#menuLeaderboardWrap,
+.scrollable-lb {
+    padding-right: 12px !important; /* Extra right clearance */
+    box-sizing: border-box !important;
+}
+
+/* 2. Fix Leaderboard Row Alignment & Flex Shrinking */
+.leaderboard .lb-row {
+    padding: 12px 16px !important;
+    gap: 12px !important;
+    overflow: hidden !important;
+}
+
+/* 3. Allow Name to Shrink instead of Pushing Score out of view */
+.lb-name-container {
+    flex: 1 1 auto !important;
+    min-width: 140px !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+}
+
+/* 4. Ensure Right Stats Group & Score Never Get Cut Off */
+.lb-stats-wrap {
+    flex: 0 0 auto !important; /* Do not allow stats block to shrink/overflow */
+    gap: 10px !important;
+}
+
+.lb-score {
+    font-size: 1.15rem !important;
+    min-width: auto !important;
+    white-space: nowrap !important;
+    padding-right: 4px !important;
+}
+
+.lb-stat-badge {
+    padding: 5px 8px !important;
+    font-size: 0.85rem !important;
+}
+
+/* 5. Fix "BACK TO MENU" Button Text Cut-Off */
+.leaderboard-modal-actions button,
+#closeLeaderboardBtn,
+#menuExportCsvBtn {
+    white-space: nowrap !important;
+    overflow: visible !important;
+    padding: 14px 12px !important;
+    font-size: 1.05rem !important;
+}
+/* ==========================================================================
+   TYPEWRITER MANGO MISSION HEADING STYLING
+   ========================================================================== */
+
+.mango-mission-box {
+    margin: 16px auto 10px auto !important;
+    text-align: center !important;
+    min-height: 2.2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.typewriter-text {
+    font-family: monospace !important;
+    font-size: clamp(1.1rem, 2.2vw, 1.6rem) !important;
+    font-weight: 900 !important;
+    color: #ffcc00 !important; /* Vibrant Mango Yellow Color */
+    text-shadow: 0 0 12px rgba(255, 204, 0, 0.8), 0 0 22px rgba(255, 102, 0, 0.5) !important;
+    letter-spacing: 2px !important;
+    text-transform: uppercase !important;
+}
+
+/* Blinking Cursor Effect */
+.typewriter-cursor {
+    font-family: monospace !important;
+    font-size: clamp(1.1rem, 2.2vw, 1.6rem) !important;
+    font-weight: 900 !important;
+    color: #ff3333 !important;
+    animation: blinkCursor 0.7s infinite alternate;
+    margin-left: 3px;
+}
+
+@keyframes blinkCursor {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}

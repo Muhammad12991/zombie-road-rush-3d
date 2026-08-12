@@ -119,6 +119,32 @@
     <!-- WebSocket Library for Mobile Controller -->
     <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
 </head>
+<script>
+    // Independent Typewriter Script without identifier collision
+    (function runMangoTypewriter() {
+        window.addEventListener("DOMContentLoaded", () => {
+            setTimeout(() => {
+                const targetEl = document.getElementById("typewriterText");
+                if (targetEl) {
+                    const fullText = "KILL 13 ZOMBIES AND COVER 1000 METERS TO WIN A MANGO  🥭";
+                    targetEl.textContent = ""; // Clear existing cursor/text
+                    let idx = 0;
+
+                    if (window.mangoTypeTimer) clearInterval(window.mangoTypeTimer);
+
+                    window.mangoTypeTimer = setInterval(() => {
+                        if (idx < fullText.length) {
+                            targetEl.textContent += fullText.charAt(idx);
+                            idx++;
+                        } else {
+                            clearInterval(window.mangoTypeTimer);
+                        }
+                    }, 50);
+                }
+            }, 200);
+        });
+    })();
+</script>
 
 <body>
 
@@ -172,6 +198,11 @@
                     <span class="title-line title-line--bottom">ROAD RUSH</span>
                 </h1>
                 <div class="title-underline"></div>
+            </div>
+
+            <!-- Typewriter Mango Challenge Banner -->
+            <div class="mango-mission-box">
+                <span id="typewriterText" class="typewriter-text"></span><span class="typewriter-cursor">|</span>
             </div>
 
             <div class="menu-panel">
@@ -270,7 +301,7 @@
                     <span class="key-badge">&rarr; / D</span>
                 </div>
                 <div class="control-row">
-                    <span>Drift / Shift</span>
+                    <span>Drift to kill zombies</span>
                     <span class="key-badge">SPACEBAR</span>
                 </div>
                 <div class="control-row">

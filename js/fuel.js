@@ -1,59 +1,79 @@
 /**
  * fuel.js
  * -----------------------------------------------------------------------
- * Ultra-glowing floating, rotating fuel canisters with neon "FUEL" text 
- * overlay and pulsing light aura that restores player fuel on contact.
- *
- * Note: this.x / this.z stay pure lane/gameplay values for collision —
- * only the rendered mesh gets nudged sideways by curveOffset() so
- * canisters visually track the (cosmetically) curving road.
+ * Floating, rotating Fuel Canisters & Wrench Pickups.
+ * Clean, non-rotating, camera-facing text sprites for maximum readability.
  * -----------------------------------------------------------------------
  */
 import * as THREE from "../assets/js/vendor/three.module.min.js";
 import { curveOffset } from "./road.js";
 
-// Generates ultra-bright "FUEL" 2D Canvas Texture with Neon Glow
-function createFuelLabelTexture() {
+// Clean & Readable "FUEL" Text Sprite (No Box, No Rotation)
+function createFuelTextSprite() {
     const canvas = document.createElement("canvas");
-    canvas.width = 256;
+    canvas.width = 512;
     canvas.height = 128;
     const ctx = canvas.getContext("2d");
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Glowing Neon Badge Background
-    ctx.fillStyle = "rgba(0, 40, 15, 0.9)";
-    ctx.strokeStyle = "#00ff66";
-    ctx.lineWidth = 8;
-
-    ctx.beginPath();
-    ctx.roundRect(8, 8, canvas.width - 16, canvas.height - 16, 20);
-    ctx.fill();
-    ctx.stroke();
-
-    // High Emissive Glow Text
-    ctx.fillStyle = "#ffffff";
-    ctx.font = "900 46px Impact, Arial, sans-serif";
+    ctx.font = "900 60px Impact, Arial, sans-serif";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    ctx.shadowColor = "#00ff66";
-    ctx.shadowBlur = 20;
 
-    ctx.fillText("⛽ FUEL", canvas.width / 2, canvas.height / 2);
+    // Black Thick Stroke for High Contrast against 3D environment
+    ctx.strokeStyle = "#000000";
+    ctx.lineWidth = 12;
+    ctx.strokeText("⛽ FUEL (+20%)", canvas.width / 2, canvas.height / 2);
 
-    return new THREE.CanvasTexture(canvas);
+    // Bright Neon Green Fill
+    ctx.fillStyle = "#00ff66";
+    ctx.fillText("⛽ FUEL (+20%)", canvas.width / 2, canvas.height / 2);
+
+    const texture = new THREE.CanvasTexture(canvas);
+    const spriteMat = new THREE.SpriteMaterial({ map: texture, transparent: true });
+    const sprite = new THREE.Sprite(spriteMat);
+    sprite.scale.set(3.2, 0.8, 1);
+    return sprite;
 }
 
-let fuelLabelTex = null;
+// Clean & Readable "WRENCH" Text Sprite (No Box, No Rotation)
+function createWrenchTextSprite() {
+    const canvas = document.createElement("canvas");
+    canvas.width = 512;
+    canvas.height = 128;
+    const ctx = canvas.getContext("2d");
 
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    ctx.font = "900 60px Impact, Arial, sans-serif";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+
+    // Black Thick Stroke for High Contrast
+    ctx.strokeStyle = "#000000";
+    ctx.lineWidth = 12;
+    ctx.strokeText("🔧 REPAIR (+15%)", canvas.width / 2, canvas.height / 2);
+
+    // Bright Gold/Yellow Fill
+    ctx.fillStyle = "#ffcc00";
+    ctx.fillText("🔧 REPAIR (+15%)", canvas.width / 2, canvas.height / 2);
+
+    const texture = new THREE.CanvasTexture(canvas);
+    const spriteMat = new THREE.SpriteMaterial({ map: texture, transparent: true });
+    const sprite = new THREE.Sprite(spriteMat);
+    sprite.scale.set(3.4, 0.85, 1);
+    return sprite;
+}
+
+// ---------------- 3D FUEL CANISTER ----------------
 function buildCanister() {
     const group = new THREE.Group();
 
-    // High Emissive Neon Green Materials
     const mat = new THREE.MeshStandardMaterial({
         color: 0x00ff55,
-        roughness: 0.2,
-        metalness: 0.7,
+        roughness: 0.15,
+        metalness: 0.8,
         emissive: 0x00d544,
         emissiveIntensity: 1.2
     });
@@ -65,87 +85,100 @@ function buildCanister() {
         emissiveIntensity: 1.5
     });
 
-    // Glowing Outer Aura Ring
-    const haloMat = new THREE.MeshBasicMaterial({
-        color: 0x00ff66,
-        transparent: true,
-        opacity: 0.45,
-        side: THREE.DoubleSide
-    });
-    const halo = new THREE.Mesh(new THREE.RingGeometry(0.7, 0.88, 18), haloMat);
-    halo.rotation.x = -Math.PI / 2;
-    halo.position.y = 0.5;
-    group.add(halo);
+    // Sub-group specifically for rotating the 3D meshes
+    const modelGroup = new THREE.Group();
 
-    // Main Body
-    const body = new THREE.Mesh(new THREE.CylinderGeometry(0.28, 0.28, 0.6, 10), mat);
-    body.position.y = 0.5;
+    const body = new THREE.Mesh(new THREE.CylinderGeometry(0.45, 0.45, 1.0, 12), mat);
+    body.position.y = 0.8;
     body.castShadow = true;
-    group.add(body);
+    modelGroup.add(body);
 
-    // Cap & Handle
-    const cap = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.16, 0.18), capMat);
-    cap.position.y = 0.86;
-    group.add(cap);
+    const cap = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.22, 0.28), capMat);
+    cap.position.y = 1.4;
+    modelGroup.add(cap);
 
-    const handle = new THREE.Mesh(new THREE.TorusGeometry(0.12, 0.03, 6, 10), capMat);
-    handle.position.y = 0.98;
+    const handle = new THREE.Mesh(new THREE.TorusGeometry(0.2, 0.05, 8, 12), capMat);
+    handle.position.y = 1.55;
     handle.rotation.x = Math.PI / 2;
-    group.add(handle);
+    modelGroup.add(handle);
 
-    // 3D Floating Glowing "FUEL" Text Label
-    if (!fuelLabelTex) {
-        fuelLabelTex = createFuelLabelTexture();
-    }
+    group.add(modelGroup);
 
-    const labelMat = new THREE.MeshBasicMaterial({
-        map: fuelLabelTex,
-        transparent: true,
-        side: THREE.DoubleSide
-    });
+    // CAMERA-FACING TEXT SPRITE (Added outside modelGroup so it doesn't rotate)
+    const textSprite = createFuelTextSprite();
+    textSprite.position.set(0, 2.2, 0);
+    group.add(textSprite);
 
-    const labelMesh = new THREE.Mesh(new THREE.PlaneGeometry(1.35, 0.68), labelMat);
-    labelMesh.position.set(0, 1.65, 0);
-    group.add(labelMesh);
-
-    // Dynamic High-Intensity Green Light Source
-    const glowLight = new THREE.PointLight(0x00ff66, 3.2, 7);
-    glowLight.position.set(0, 0.8, 0);
+    const glowLight = new THREE.PointLight(0x00ff66, 3.5, 8);
+    glowLight.position.set(0, 1.0, 0);
     group.add(glowLight);
 
-    return { group, halo, glowLight };
+    return { group, modelGroup, glowLight };
+}
+
+// ---------------- 3D WRENCH MODEL ----------------
+function buildWrenchMesh() {
+    const group = new THREE.Group();
+
+    const chromeMat = new THREE.MeshStandardMaterial({
+        color: 0xffcc00,
+        metalness: 0.95,
+        roughness: 0.1,
+        emissive: 0xff9900,
+        emissiveIntensity: 1.2
+    });
+
+    // Sub-group specifically for rotating the 3D meshes
+    const modelGroup = new THREE.Group();
+
+    const handle = new THREE.Mesh(new THREE.BoxGeometry(0.28, 1.3, 0.12), chromeMat);
+    handle.position.y = 0.75;
+    modelGroup.add(handle);
+
+    const headTop = new THREE.Mesh(new THREE.CylinderGeometry(0.42, 0.42, 0.14, 16), chromeMat);
+    headTop.position.y = 1.4;
+    modelGroup.add(headTop);
+
+    modelGroup.rotation.z = Math.PI / 6;
+    group.add(modelGroup);
+
+    // CAMERA-FACING TEXT SPRITE (Added outside modelGroup so it doesn't rotate)
+    const textSprite = createWrenchTextSprite();
+    textSprite.position.set(0, 2.1, 0);
+    group.add(textSprite);
+
+    const glowLight = new THREE.PointLight(0xffcc00, 3.8, 8);
+    glowLight.position.set(0, 1.0, 0);
+    group.add(glowLight);
+
+    return { group, modelGroup, glowLight };
 }
 
 class FuelTank {
-    constructor(x, z) {
+    constructor(x, z, pickupType = "fuel") {
         this.x = x;
         this.z = z;
+        this.pickupType = pickupType;
         this.bobPhase = Math.random() * Math.PI * 2;
 
-        const parts = buildCanister();
+        const parts = pickupType === "wrench" ? buildWrenchMesh() : buildCanister();
         this.group = parts.group;
-        this.halo = parts.halo;
+        this.modelGroup = parts.modelGroup;
         this.glowLight = parts.glowLight;
         this.group.position.set(x, 0, z);
     }
 
-    get bounds() { return { x: this.x, z: this.z, halfW: 0.4, halfL: 0.4 }; }
+    get bounds() { return { x: this.x, z: this.z, halfW: 0.55, halfL: 0.55 }; }
 
     update(dt, worldSpeed) {
         this.z += worldSpeed * dt;
         this.bobPhase += dt * 3.5;
 
-        // Hovering Up & Down Motion
-        const hoverY = 0.35 + Math.sin(this.bobPhase) * 0.18;
+        const hoverY = 0.4 + Math.sin(this.bobPhase) * 0.18;
         this.group.position.set(this.x + curveOffset(this.z), hoverY, this.z);
 
-        // Pulsing Light & Ring Effect
-        const pulse = 0.85 + Math.sin(this.bobPhase * 2) * 0.25;
-        if (this.halo) this.halo.scale.set(pulse, pulse, pulse);
-        if (this.glowLight) this.glowLight.intensity = 2.5 + Math.sin(this.bobPhase * 2) * 0.8;
-
-        // Rotation
-        this.group.rotation.y += dt * 1.6;
+        // Sirf 3D Model Spin Karega, Text Sprite hamesha camera facing aur STILL rahega!
+        if (this.modelGroup) this.modelGroup.rotation.y += dt * 1.8;
     }
 }
 
@@ -155,20 +188,33 @@ export class FuelManager {
         this.road = road;
         this.list = [];
         this.spawnTimer = 0;
+        this.lastWrenchDist = 0;
     }
 
     reset() {
         for (const f of this.list) this.scene.remove(f.group);
         this.list = [];
         this.spawnTimer = 3;
+        this.lastWrenchDist = 0;
     }
 
-    update(dt, difficulty, worldSpeed, farZ) {
+    update(dt, difficulty, worldSpeed, farZ, currentDistance = 0) {
         this.spawnTimer -= dt;
+
+        // Spawn Wrench every 500m
+        if (currentDistance - this.lastWrenchDist >= 500) {
+            this.lastWrenchDist = currentDistance;
+            const lane = Math.floor(Math.random() * this.road.laneCount);
+            const wrench = new FuelTank(this.road.laneCenterX(lane), farZ, "wrench");
+            this.scene.add(wrench.group);
+            this.list.push(wrench);
+        }
+
+        // Regular Fuel Canister Spawn
         if (this.spawnTimer <= 0) {
             this.spawnTimer = Math.min(3 + difficulty * 0.9, 14) * (0.8 + Math.random() * 0.5);
             const lane = Math.floor(Math.random() * this.road.laneCount);
-            const f = new FuelTank(this.road.laneCenterX(lane), farZ);
+            const f = new FuelTank(this.road.laneCenterX(lane), farZ, "fuel");
             this.scene.add(f.group);
             this.list.push(f);
         }
