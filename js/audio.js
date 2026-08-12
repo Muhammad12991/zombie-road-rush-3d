@@ -1,10 +1,12 @@
 /**
- * audio.js (REAL SOUNDTRACK EDITION)
+ * audio.js (REAL MP3 SOUNDTRACK & AMBIENT WIND-RAIN EDITION)
  * -----------------------------------------------------------------------
- * Uses your actual .mp3 soundtrack for the background music!
- * The track plays at full volume in the menu and dynamically fades
- * to a lower volume during gameplay so you can hear the engine and zombies.
- * All other SFX (engine, zombies, rain) are kept as synthesized audio.
+ * Menu Ambience: theme.mp3
+ * Gameplay Music: bg-music.mp3
+ * Environment Ambient: wind-rain.mp3 (Continuous background loop)
+ * Zombie Death: zombie-die.mp3 (Trimmed strictly to 1.0s)
+ * Item Pickup: item-pick.mp3 (Fuel & Wrench)
+ * Obstacle Crash: hit.mp3 (Trimmed strictly to 1.0s)
  * -----------------------------------------------------------------------
  */
 export const Audio_ = (function() {
@@ -19,9 +21,10 @@ export const Audio_ = (function() {
     let engine = null;
     let envNodes = null;
 
-    // --- Real MP3 Audio Variables ---
+    // --- Real MP3 Audio Objects ---
+    let menuTheme = null;
     let bgMusic = null;
-    let musicFadeInterval = null;
+    let windRainAudio = null;
 
     function getCtx() {
         if (!ctx) {
@@ -117,15 +120,40 @@ export const Audio_ = (function() {
         } catch (e) {}
     }
 
+    function playTrimmedAudio(audioPath, durationInSeconds = 1.0, volume = 0.95) {
+        if (muted) return;
+        try {
+            const sound = new Audio(audioPath);
+            sound.volume = volume;
+            sound.currentTime = 0;
+            sound.play().catch(() => {});
+
+            setTimeout(() => {
+                sound.pause();
+                sound.currentTime = 0;
+            }, durationInSeconds * 1000);
+        } catch (e) {}
+    }
+
+    function playAudioSFX(audioPath, volume = 0.9) {
+        if (muted) return;
+        try {
+            const sound = new Audio(audioPath);
+            sound.volume = volume;
+            sound.currentTime = 0;
+            sound.play().catch(() => {});
+        } catch (e) {}
+    }
+
     return {
         setMuted(v) {
             muted = v;
             if (ctx) {
                 masterGain.gain.setTargetAtTime(muted ? 0 : SETTINGS.master, ctx.currentTime, 0.1);
             }
-            if (bgMusic) {
-                bgMusic.muted = muted;
-            }
+            if (menuTheme) menuTheme.muted = muted;
+            if (bgMusic) bgMusic.muted = muted;
+            if (windRainAudio) windRainAudio.muted = muted;
         },
         isMuted() { return muted; },
         resume() { try { getCtx().resume(); } catch (e) {} },
@@ -139,28 +167,8 @@ export const Audio_ = (function() {
 
         zombieKill() {
             if (muted) return;
-            playSoftImpact(0.4, 1.0, 800);
-            playSoftImpact(0.6, 0.8, 300);
-
-            const c = getCtx();
-            const osc = c.createOscillator();
-            const gain = c.createGain();
-            osc.type = "triangle";
-
-            osc.frequency.setValueAtTime(120 + Math.random() * 40, c.currentTime);
-            osc.frequency.exponentialRampToValueAtTime(50, c.currentTime + 0.8);
-
-            gain.gain.setValueAtTime(0, c.currentTime);
-            gain.gain.linearRampToValueAtTime(0.4, c.currentTime + 0.1);
-            gain.gain.exponentialRampToValueAtTime(0.001, c.currentTime + 0.8);
-
-            const filter = c.createBiquadFilter();
-            filter.type = "lowpass";
-            filter.frequency.value = 600;
-
-            osc.connect(filter).connect(gain).connect(sfxGain);
-            osc.start();
-            osc.stop(c.currentTime + 0.8);
+            playSoftImpact(0.3, 1.0, 700);
+            playTrimmedAudio('assets/js/vendor/audio/zombie-die.mp3', 1.0, 0.95);
         },
 
         zombieGroan() {
@@ -237,42 +245,71 @@ export const Audio_ = (function() {
             }
         },
 
-        // --- REAL MP3 SOUNDTRACK LOGIC ---
+        // --- MENU THEME ---
         startMenuAmbience() {
             if (muted) return;
             try {
-                // Initialize audio object only once
-                if (!bgMusic) {
-                    bgMusic = new Audio('assets/js/vendor/audio/theme.mp3');
-                    bgMusic.loop = true;
+                if (!menuTheme) {
+                    menuTheme = new Audio('assets/js/vendor/audio/theme.mp3');
+                    menuTheme.loop = true;
                 }
-
-                // Clear any ongoing fade-out animations
-                clearInterval(musicFadeInterval);
-
-                // Set volume back to full (80%) for the menu
-                bgMusic.volume = 0.8;
-                bgMusic.muted = muted;
-
-                // Browser policies might block autoplay, catch the error silently
-                bgMusic.play().catch(e => console.warn("Waiting for player interaction to play audio."));
+                menuTheme.volume = 0.8;
+                menuTheme.muted = muted;
+                menuTheme.play().catch(() => {});
             } catch (e) {}
         },
 
         stopMenuAmbience() {
-            // Instead of stopping the track completely, we fade it down to 15% volume for gameplay!
-            if (bgMusic) {
-                clearInterval(musicFadeInterval);
-                let vol = bgMusic.volume;
+            if (menuTheme) {
+                menuTheme.pause();
+                menuTheme.currentTime = 0;
+            }
+        },
 
-                musicFadeInterval = setInterval(() => {
-                    vol -= 0.05;
-                    if (vol <= 0.15) {
-                        vol = 0.15;
-                        clearInterval(musicFadeInterval);
-                    }
-                    bgMusic.volume = vol;
-                }, 100);
+        // --- GAMEPLAY MUSIC & WIND-RAIN AMBIANCE ---
+        startMusic() {
+            if (muted) return;
+
+            // Background Music
+            try {
+                if (!bgMusic) {
+                    bgMusic = new Audio('assets/js/vendor/audio/bg-music.mp3');
+                    bgMusic.loop = true;
+                }
+                bgMusic.volume = 0.35;
+                bgMusic.muted = muted;
+                bgMusic.play().catch(e => console.warn("BG Music error:", e));
+            } catch (e) {}
+
+            // Wind-Rain Ambience (Clear Audio Output)
+            try {
+                if (!windRainAudio) {
+                    windRainAudio = new Audio('assets/js/vendor/audio/wind-rain.mp3');
+                    windRainAudio.loop = true;
+                }
+                windRainAudio.volume = 0.55; // Boosted volume so it is clearly audible
+                windRainAudio.muted = muted;
+
+                // Reset playback time to start fresh
+                windRainAudio.currentTime = 0;
+
+                const promise = windRainAudio.play();
+                if (promise !== undefined) {
+                    promise.catch(e => {
+                        console.warn("Wind-Rain autoplay blocked by browser, re-trying on click.", e);
+                    });
+                }
+            } catch (e) {}
+        },
+
+        stopMusic() {
+            if (bgMusic) {
+                bgMusic.pause();
+                bgMusic.currentTime = 0;
+            }
+            if (windRainAudio) {
+                windRainAudio.pause();
+                windRainAudio.currentTime = 0;
             }
         },
 
@@ -321,16 +358,18 @@ export const Audio_ = (function() {
 
         // --- UI & MISC EVENTS ---
         combo() { playSmoothTone(400, 0.2, "sine", 0.3); },
+
         crash() {
-            playSoftImpact(0.8, 0.8, 400);
-            playSmoothTone(50, 0.6, "triangle", 0.5);
+            playTrimmedAudio('assets/js/vendor/audio/hit.mp3', 1.0, 0.95);
         },
-        fuelPickup() { playSmoothTone(600, 0.3, "sine", 0.3); },
+
+        fuelPickup() {
+            playAudioSFX('assets/js/vendor/audio/item-pick.mp3', 0.9);
+        },
+
         button() { playSmoothTone(300, 0.1, "sine", 0.4); },
         gameOver() { playSmoothTone(100, 2.0, "triangle", 0.4); },
 
-        startMusic() {},
-        stopMusic() {},
         _setEngineGain(v) { if (engine) { try { engine.gain.gain.setTargetAtTime(v, getCtx().currentTime, 0.1); } catch (e) {} } }
     };
 })();
