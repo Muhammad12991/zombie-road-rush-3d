@@ -272,6 +272,33 @@ document.getElementById("startBtn").addEventListener("click", () => {
     document.getElementById("controlsModal").classList.remove("hidden");
 });
 
+// NEW MAIN MENU LEADERBOARD WIRING
+const mainLeaderboardBtn = document.getElementById("mainLeaderboardBtn");
+if (mainLeaderboardBtn) {
+    mainLeaderboardBtn.addEventListener("click", () => {
+        Audio_.button();
+        // Render Top 10 inside the menu leaderboard modal using existing Storage data
+        UI.setLeaderboard(Storage.getTopScores(), null, UI.els.menuLeaderboardList);
+        UI.toggleMenuLeaderboard(true);
+    });
+}
+
+const closeLeaderboardBtn = document.getElementById("closeLeaderboardBtn");
+if (closeLeaderboardBtn) {
+    closeLeaderboardBtn.addEventListener("click", () => {
+        Audio_.button();
+        UI.toggleMenuLeaderboard(false);
+    });
+}
+
+const menuExportCsvBtn = document.getElementById("menuExportCsvBtn");
+if (menuExportCsvBtn) {
+    menuExportCsvBtn.addEventListener("click", () => {
+        Audio_.button();
+        Storage.exportCSV();
+    });
+}
+
 document.getElementById("launchGameBtn").addEventListener("click", () => {
     Audio_.button();
     document.getElementById("controlsModal").classList.add("hidden");

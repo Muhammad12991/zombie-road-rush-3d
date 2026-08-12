@@ -175,16 +175,23 @@
             </div>
 
             <div class="menu-panel">
-                <div class="menu-row menu-row--input">
+                <!-- Inputs with Reduced Gap -->
+                <div class="menu-row menu-row--input small-gap">
                     <input id="companyInput" class="identity-input" type="text" placeholder="COMPANY NAME" maxlength="60" autocomplete="off" />
                 </div>
-                <div class="menu-row menu-row--input">
+                <div class="menu-row menu-row--input medium-gap">
                     <input id="playerInput" class="identity-input" type="text" placeholder="PLAYER NAME" maxlength="60" autocomplete="off" />
                 </div>
                 <div id="identityError" class="identity-error hidden">Enter company &amp; player name to start</div>
 
                 <button id="startBtn" class="menu-row menu-row--primary">
                     <span class="menu-row-label">START ENGINE</span>
+                    <span class="menu-row-arrow">▶</span>
+                </button>
+
+                <!-- MAIN MENU LEADERBOARD BUTTON -->
+                <button id="mainLeaderboardBtn" class="menu-row menu-row--secondary">
+                    <span class="menu-row-label">🏆 LEADERBOARD</span>
                     <span class="menu-row-arrow">▶</span>
                 </button>
 
@@ -199,16 +206,30 @@
                     <span class="menu-row-value" id="mainSoundToggleVal">ON</span>
                 </button>
 
-                <div class="menu-row menu-row--controls">
-                    <div class="ctrl-line"><kbd>&larr;</kbd><kbd>&rarr;</kbd> / <kbd>A</kbd><kbd>D</kbd> STEER</div>
-                    <div class="ctrl-line"><kbd>SPACE</kbd> DRIFT <span class="hint">guaranteed kill</span></div>
-                    <div class="ctrl-line"><kbd>P</kbd> PAUSE</div>
-                    <div class="ctrl-line touch-only">DRAG TO STEER · HOLD TO DRIFT</div>
+                <!-- Highly Visible Controls Box -->
+                <div class="menu-row menu-row--controls main-menu-controls-card">
+                    <div class="ctrl-line">
+                        <span class="key-group">
+                            <kbd>&larr;</kbd><kbd>&rarr;</kbd> / <kbd>A</kbd><kbd>D</kbd>
+                        </span>
+                        <span class="ctrl-action">STEER</span>
+                    </div>
+                    <div class="ctrl-line">
+                        <kbd class="key-space">SPACE</kbd>
+                        <span class="ctrl-action">DRIFT</span>
+                        <span class="hint-tag">GUARANTEED KILL</span>
+                    </div>
+                    <div class="ctrl-line">
+                        <kbd>P</kbd>
+                        <span class="ctrl-action">PAUSE</span>
+                    </div>
+                    <div class="ctrl-line touch-only">
+                        DRAG TO STEER · HOLD TO DRIFT
+                    </div>
                 </div>
             </div>
 
-            <!-- Is line ko dhoond kar is tarah replace kar dein -->
-            <div style="font-size: 1.35rem; font-weight: 800; letter-spacing: 3px; color: #ff3333; text-shadow: 0 0 12px rgba(255, 0, 0, 0.8); margin-top: 18px; text-transform: uppercase;">
+            <div class="fleshy-zombie-text">
                 ABANDONED CITY. DEAD AHEAD. FLOOR IT.
             </div>
 
@@ -217,6 +238,22 @@
                 <img id="qrImage" src="" alt="Loading QR..." class="qr-image" />
                 <p class="qr-copy">Scan to use your phone<br>as a controller</p>
                 <div id="mobileStatus" class="qr-status">WAITING...</div>
+            </div>
+        </div>
+
+        <!-- ================= MAIN MENU DEDICATED LEADERBOARD MODAL ================= -->
+        <div id="menuLeaderboardModal" class="controls-modal hidden">
+            <div class="controls-card leaderboard-modal-card">
+                <h2 class="controls-title dripping-title">HALL OF DEAD — TOP 10</h2>
+
+                <div id="menuLeaderboardWrap" class="leaderboard-wrap scrollable-lb">
+                    <div id="menuLeaderboardList" class="leaderboard"></div>
+                </div>
+
+                <div class="leaderboard-modal-actions">
+                    <button id="menuExportCsvBtn" class="export-csv-btn">EXPORT ALL SCORES (CSV)</button>
+                    <button id="closeLeaderboardBtn" class="primary-btn">BACK TO MENU</button>
+                </div>
             </div>
         </div>
 

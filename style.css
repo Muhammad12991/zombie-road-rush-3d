@@ -1478,3 +1478,792 @@ div[style*="text-align: center"] {
 div:has(> span), .controls-box, .start-controls-box {
     font-size: 1.1rem !important;
 }
+/* ==========================================================================
+   MAIN MENU LEADERBOARD MODAL & STYLING
+   ========================================================================== */
+
+/* Main Modal Centering */
+#menuLeaderboardModal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.9);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+}
+
+/* Modal Box Container */
+.leaderboard-modal-card {
+    background: rgba(10, 8, 14, 0.96) !important;
+    border: 3px solid #ff2200 !important;
+    border-radius: 14px;
+    padding: 28px !important;
+    max-width: 650px !important;
+    width: 90% !important;
+    box-shadow: 0 0 35px rgba(255, 34, 0, 0.45) !important;
+    box-sizing: border-box;
+}
+
+/* Scrollable Container with Hidden Scrollbars */
+.scrollable-lb {
+    max-height: 380px !important;
+    overflow-y: auto !important;
+    margin: 15px 0 20px 0 !important;
+    padding-right: 5px;
+    
+    /* Cross-browser scrollbar hiding */
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+}
+
+.scrollable-lb::-webkit-scrollbar {
+    display: none !important;
+}
+
+/* Secondary Button in Main Menu */
+.menu-row--secondary {
+    background: rgba(255, 34, 0, 0.15) !important;
+    border: 1px solid rgba(255, 51, 51, 0.5) !important;
+    color: #ffcccc !important;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+.menu-row--secondary:hover {
+    background: rgba(255, 34, 0, 0.35) !important;
+    border-color: #ff2200 !important;
+    color: #ffffff !important;
+}
+
+/* Row Item Styling */
+.leaderboard .lb-row {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    padding: 10px 14px !important;
+    margin-bottom: 8px !important;
+    background: rgba(22, 18, 25, 0.85) !important;
+    border: 1px solid rgba(255, 34, 0, 0.3) !important;
+    border-radius: 6px !important;
+    color: #ffffff !important;
+}
+
+.lb-name {
+    flex: 1 !important;
+    padding: 0 12px !important;
+    font-weight: bold;
+    color: #f0f0f0 !important;
+    word-break: break-word !important;
+}
+
+.lb-stats-wrap {
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+}
+
+.lb-score {
+    font-size: 1.2rem !important;
+    font-weight: 800 !important;
+    color: #00ffaa !important;
+}
+
+/* Action Buttons Container */
+.leaderboard-modal-actions {
+    display: flex !important;
+    gap: 12px !important;
+    margin-top: 10px !important;
+}
+
+.leaderboard-modal-actions button {
+    flex: 1 !important;
+    padding: 12px !important;
+    font-weight: bold !important;
+    cursor: pointer !important;
+}
+/* ==========================================================================
+   FULL WIDTH LEADERBOARD STRETCH & EXPANSION FIX
+   ========================================================================== */
+
+/* 1. Modal Container Fit */
+.leaderboard-modal-card {
+    max-width: 820px !important;
+    width: 92% !important;
+    box-sizing: border-box !important;
+}
+
+/* 2. Force Wrapper and List to Stretch 100% Full Width */
+#menuLeaderboardWrap, 
+#menuLeaderboardList, 
+.leaderboard-wrap, 
+.leaderboard, 
+.scrollable-lb {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+/* 3. Stretch Each Individual Row Across the Full Modal Width */
+.leaderboard .lb-row {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    padding: 14px 22px !important;
+    margin-bottom: 12px !important;
+    background: rgba(22, 16, 28, 0.95) !important;
+    border: 1px solid rgba(255, 34, 0, 0.45) !important;
+    border-radius: 8px !important;
+    gap: 20px !important;
+}
+
+/* 4. Rank Badge */
+.lb-rank {
+    font-size: 1.2rem !important;
+    font-weight: 900 !important;
+    color: #ffcc00 !important;
+    min-width: 45px !important;
+    text-align: left !important;
+}
+
+/* 5. Company & Player Name Area (Expanded) */
+.lb-name-container {
+    flex: 1 1 auto !important;
+    text-align: left !important;
+    font-size: 1.05rem !important;
+    white-space: nowrap !important;
+}
+
+.lb-comp {
+    color: #ffffff !important;
+    font-weight: 800 !important;
+    letter-spacing: 1.5px !important;
+    text-transform: uppercase !important;
+}
+
+.lb-player {
+    color: #ff7777 !important;
+    font-size: 0.95rem !important;
+    font-weight: 600 !important;
+    margin-left: 6px !important;
+}
+
+/* 6. Stats Badges Aligned to the Far Right */
+.lb-stats-wrap {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    gap: 18px !important;
+    margin-left: auto !important;
+}
+
+.lb-stat-badge {
+    font-family: monospace !important;
+    font-size: 0.92rem !important;
+    font-weight: 700 !important;
+    padding: 6px 12px !important;
+    background: rgba(0, 0, 0, 0.7) !important;
+    border-radius: 6px !important;
+    letter-spacing: 1px !important;
+    white-space: nowrap !important;
+}
+
+.lb-kills {
+    color: #ff4444 !important;
+    border: 1px solid rgba(255, 68, 68, 0.45) !important;
+}
+
+.lb-dist {
+    color: #00e5ff !important;
+    border: 1px solid rgba(0, 229, 255, 0.45) !important;
+}
+
+/* 7. Highlighted Score Text */
+.lb-score {
+    font-size: 1.25rem !important;
+    font-weight: 900 !important;
+    color: #00ffaa !important;
+    text-shadow: 0 0 10px rgba(0, 255, 170, 0.6) !important;
+    letter-spacing: 1px !important;
+    white-space: nowrap !important;
+    min-width: 120px !important;
+    text-align: right !important;
+}
+/* ==========================================================================
+   FINAL ENLARGED LEADERBOARD MODAL & BUTTON STYLE MATCHING
+   ========================================================================== */
+
+/* 1. Scale Up Main Modal Container Box */
+.leaderboard-modal-card {
+    max-width: 950px !important; /* Larger modal width */
+    width: 94% !important;
+    max-height: 90vh !important;
+    padding: 36px 42px !important;
+    box-sizing: border-box !important;
+}
+
+/* 2. Scaled Title */
+.leaderboard-modal-card .controls-title,
+.leaderboard-modal-card .dripping-title {
+    font-size: 2.5rem !important;
+    letter-spacing: 4px !important;
+    margin-bottom: 24px !important;
+}
+
+/* 3. Scaled Leaderboard Rows & Spacing */
+.leaderboard .lb-row {
+    padding: 16px 24px !important;
+    margin-bottom: 14px !important;
+    border-radius: 10px !important;
+}
+
+/* Rank Text Size */
+.lb-rank {
+    font-size: 1.35rem !important;
+    min-width: 55px !important;
+}
+
+/* Company and Player Text Size */
+.lb-name-container {
+    font-size: 1.2rem !important;
+}
+
+.lb-comp {
+    font-size: 1.2rem !important;
+}
+
+.lb-player {
+    font-size: 1.05rem !important;
+}
+
+/* Badges Size */
+.lb-stat-badge {
+    font-size: 1.05rem !important;
+    padding: 8px 16px !important;
+    border-radius: 8px !important;
+}
+
+/* Score Text Size */
+.lb-score {
+    font-size: 1.45rem !important;
+    min-width: 140px !important;
+}
+
+/* 4. Action Buttons Layout */
+.leaderboard-modal-actions {
+    display: flex !important;
+    gap: 20px !important;
+    margin-top: 18px !important;
+}
+
+/* Apply Exact "BACK TO MENU" Button Styling to EXPORT ALL SCORES Button */
+#menuExportCsvBtn, 
+.leaderboard-modal-actions .export-csv-btn {
+    flex: 1 !important;
+    background: #c23122 !important; /* Primary red button background */
+    color: #ffffff !important;
+    border: 2px solid #ff4433 !important;
+    border-radius: 8px !important;
+    font-size: 1.2rem !important;
+    font-weight: 800 !important;
+    letter-spacing: 1.5px !important;
+    padding: 16px 24px !important;
+    cursor: pointer !important;
+    text-transform: uppercase !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5) !important;
+    transition: all 0.2s ease-in-out !important;
+}
+
+/* Hover and Active states for Export button */
+#menuExportCsvBtn:hover, 
+.leaderboard-modal-actions .export-csv-btn:hover {
+    background: #e03826 !important;
+    box-shadow: 0 0 20px rgba(255, 51, 51, 0.6) !important;
+    transform: translateY(-2px) !important;
+}
+
+#menuExportCsvBtn:active, 
+.leaderboard-modal-actions .export-csv-btn:active {
+    transform: translateY(1px) !important;
+}
+
+/* Ensure Close Button matches exactly */
+#closeLeaderboardBtn {
+    flex: 1 !important;
+    padding: 16px 24px !important;
+    font-size: 1.2rem !important;
+    font-weight: 800 !important;
+    letter-spacing: 1.5px !important;
+}
+/* ==========================================================================
+   GAME OVER SCREEN REDESIGN & FULL EXPANSION FIX
+   ========================================================================== */
+
+/* 1. Main Game Over Container & Card Expansion */
+#gameOverScreen .game-over-container {
+    max-width: 900px !important;
+    width: 94% !important;
+    margin: 0 auto !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 16px !important;
+}
+
+#gameOverScreen .game-over-card, 
+#gameOverScreen .stats-card, 
+#gameOverScreen .leaderboard-card {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    background: rgba(12, 10, 16, 0.95) !important;
+    border: 2px solid #ff2200 !important;
+    border-radius: 12px !important;
+    padding: 20px 28px !important;
+    box-shadow: 0 0 25px rgba(255, 34, 0, 0.35) !important;
+}
+
+/* 2. Full Width Leaderboard List inside Game Over */
+#gameOverScreen #leaderboardWrap, 
+#gameOverScreen #leaderboardList, 
+#gameOverScreen .leaderboard {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+#gameOverScreen .lb-row {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    padding: 14px 20px !important;
+    margin-bottom: 10px !important;
+    background: rgba(22, 16, 28, 0.95) !important;
+    border: 1px solid rgba(255, 34, 0, 0.4) !important;
+    border-radius: 8px !important;
+}
+
+/* 3. Stats Card Text Formatting */
+#gameOverScreen .final-stats {
+    display: flex !important;
+    justify-content: space-around !important;
+    align-items: center !important;
+    width: 100% !important;
+    flex-wrap: wrap !important;
+}
+
+#gameOverScreen .final-stat {
+    text-align: center !important;
+}
+
+#gameOverScreen .stat-lbl {
+    font-size: 0.95rem !important;
+    letter-spacing: 1.5px !important;
+    color: #aaa !important;
+    display: block !important;
+    margin-bottom: 6px !important;
+}
+
+#gameOverScreen .stat-num {
+    font-size: 1.8rem !important;
+    font-weight: 800 !important;
+    color: #ffffff !important;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.4) !important;
+}
+
+/* 4. Horizontal Action Buttons Grid (Fully Visible & Aligned) */
+#gameOverScreen .game-over-actions {
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 16px !important;
+    width: 100% !important;
+    margin-top: 10px !important;
+}
+
+/* Base Style for All Game Over Buttons */
+#gameOverScreen .game-over-actions button, 
+#gameOverScreen #restartBtn, 
+#gameOverScreen #menuBtn, 
+#gameOverScreen #exportCsvBtn {
+    flex: 1 !important;
+    padding: 15px 18px !important;
+    font-size: 1.15rem !important;
+    font-weight: 800 !important;
+    letter-spacing: 1.5px !important;
+    border-radius: 8px !important;
+    text-transform: uppercase !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease-in-out !important;
+    text-align: center !important;
+}
+
+/* Primary "DRIVE AGAIN" Button */
+#gameOverScreen #restartBtn, 
+#gameOverScreen .pulse-btn {
+    background: #ff2200 !important;
+    color: #ffffff !important;
+    border: 2px solid #ff4433 !important;
+    box-shadow: 0 0 18px rgba(255, 34, 0, 0.6) !important;
+}
+
+#gameOverScreen #restartBtn:hover {
+    background: #ff3311 !important;
+    box-shadow: 0 0 25px rgba(255, 51, 51, 0.8) !important;
+    transform: translateY(-2px) !important;
+}
+
+/* Secondary "MAIN MENU" Button */
+#gameOverScreen #menuBtn {
+    background: rgba(30, 25, 35, 0.9) !important;
+    color: #ffffff !important;
+    border: 2px solid rgba(255, 51, 51, 0.6) !important;
+}
+
+#gameOverScreen #menuBtn:hover {
+    background: rgba(50, 35, 45, 0.95) !important;
+    border-color: #ff2200 !important;
+    transform: translateY(-2px) !important;
+}
+
+/* Tertiary "EXPORT ALL SCORES (CSV)" Button */
+#gameOverScreen #exportCsvBtn {
+    background: #c23122 !important;
+    color: #ffffff !important;
+    border: 2px solid #ff4433 !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5) !important;
+}
+
+#gameOverScreen #exportCsvBtn:hover {
+    background: #e03826 !important;
+    box-shadow: 0 0 20px rgba(255, 51, 51, 0.6) !important;
+    transform: translateY(-2px) !important;
+}
+
+/* Responsive adjustment for mobile screens */
+@media (max-width: 650px) {
+    #gameOverScreen .game-over-actions {
+        flex-direction: column !important;
+    }
+}
+/* ==========================================================================
+   GAME OVER COMPACT STATS & CLEAN BUTTON TYPOGRAPHY OVERRIDE
+   ========================================================================== */
+
+/* 1. Compact Stats Box (Single Line - 4 Items Row) */
+#gameOverScreen .stats-card {
+    padding: 14px 20px !important;
+    margin-bottom: 8px !important;
+}
+
+#gameOverScreen .final-stats {
+    display: grid !important;
+    grid-template-columns: repeat(4, 1fr) !important; /* Single row with 4 stats */
+    align-items: center !important;
+    gap: 12px !important;
+    width: 100% !important;
+}
+
+#gameOverScreen .final-stat {
+    text-align: center !important;
+    padding: 4px 8px !important;
+    border-right: 1px solid rgba(255, 34, 0, 0.25) !important;
+}
+
+#gameOverScreen .final-stat:last-child {
+    border-right: none !important;
+}
+
+#gameOverScreen .stat-lbl {
+    font-size: 0.85rem !important;
+    letter-spacing: 1.2px !important;
+    color: #ffaaaa !important;
+    font-weight: 700 !important;
+    margin-bottom: 4px !important;
+    text-transform: uppercase !important;
+}
+
+#gameOverScreen .stat-num {
+    font-size: 1.5rem !important;
+    font-weight: 800 !important;
+    color: #ffffff !important;
+    text-shadow: 0 0 8px rgba(255, 255, 255, 0.3) !important;
+}
+
+/* 2. Expanded Top 10 Leaderboard Card */
+#gameOverScreen .leaderboard-card {
+    max-height: 320px !important;
+    padding: 18px 24px !important;
+}
+
+#gameOverScreen #leaderboardWrap,
+#gameOverScreen .leaderboard-wrap {
+    max-height: 250px !important;
+    overflow-y: auto !important;
+    scrollbar-width: none !important;
+}
+
+#gameOverScreen #leaderboardWrap::-webkit-scrollbar {
+    display: none !important;
+}
+
+/* 3. Clean, Sharp & Readable Action Buttons Typography */
+#gameOverScreen .game-over-actions {
+    display: flex !important;
+    gap: 14px !important;
+    margin-top: 14px !important;
+    width: 100% !important;
+}
+
+#gameOverScreen .game-over-actions button,
+#gameOverScreen #restartBtn,
+#gameOverScreen #menuBtn,
+#gameOverScreen #exportCsvBtn {
+    flex: 1 !important;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important; /* Clean font for maximum readability */
+    font-size: 0.98rem !important;
+    font-weight: 800 !important;
+    letter-spacing: 1.5px !important;
+    padding: 13px 16px !important;
+    border-radius: 8px !important;
+    text-transform: uppercase !important;
+    text-shadow: none !important; /* Remove fuzzy neon blur */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4) !important;
+    transition: all 0.2s ease-in-out !important;
+}
+
+/* DRIVE AGAIN Button */
+#gameOverScreen #restartBtn {
+    background: #ff2200 !important;
+    color: #ffffff !important;
+    border: 2px solid #ff4433 !important;
+}
+
+#gameOverScreen #restartBtn:hover {
+    background: #ff3311 !important;
+    box-shadow: 0 0 15px rgba(255, 34, 0, 0.6) !important;
+}
+
+/* MAIN MENU Button */
+#gameOverScreen #menuBtn {
+    background: #1a1520 !important;
+    color: #ffffff !important;
+    border: 2px solid #ff3333 !important;
+}
+
+#gameOverScreen #menuBtn:hover {
+    background: #2a2030 !important;
+    border-color: #ff5555 !important;
+}
+
+/* EXPORT ALL SCORES (CSV) Button */
+#gameOverScreen #exportCsvBtn {
+    background: #c23122 !important;
+    color: #ffffff !important;
+    border: 2px solid #ff4433 !important;
+}
+
+#gameOverScreen #exportCsvBtn:hover {
+    background: #e03826 !important;
+    box-shadow: 0 0 15px rgba(255, 51, 51, 0.5) !important;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 650px) {
+    #gameOverScreen .final-stats {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+    #gameOverScreen .game-over-actions {
+        flex-direction: column !important;
+    }
+}
+/* ==========================================================================
+   FLESHY ZOMBIE / TAGLINE TEXT ENHANCEMENT
+   ========================================================================== */
+
+.fleshy-zombie-text,
+.start-overlay div[style*="ABANDONED CITY"] {
+    font-size: 1.15rem !important;
+    font-weight: 900 !important;
+    letter-spacing: 4px !important;
+    color: #ff2200 !important;
+    text-shadow: 0 0 16px rgba(255, 0, 0, 0.9), 0 0 30px rgba(255, 0, 0, 0.4) !important;
+    margin-top: 22px !important;
+    text-transform: uppercase !important;
+    text-align: center !important;
+}
+/* ==========================================================================
+   IN-GAME HUD ENHANCEMENT (TOP BARS & BOTTOM STAT BOXES)
+   ========================================================================== */
+
+/* ---------------- Top HUD (Health & Fuel) ---------------- */
+#hud .hud-top {
+    padding: 20px 25px !important;
+    gap: 20px !important;
+    align-items: center !important;
+}
+
+/* Health & Fuel Labels */
+#hud .meter-label {
+    font-size: 1.15rem !important;
+    font-weight: 900 !important;
+    letter-spacing: 2px !important;
+    color: #ffffff !important;
+    text-shadow: 0 0 10px rgba(0, 0, 0, 0.9) !important;
+    margin-bottom: 6px !important;
+}
+
+/* Track Box (Thicker Bar Heights) */
+#hud .meter-track {
+    height: 22px !important; /* Increased height */
+    background: rgba(0, 0, 0, 0.75) !important;
+    border: 2px solid rgba(255, 255, 255, 0.3) !important;
+    border-radius: 6px !important;
+    box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.9) !important;
+    padding: 2px !important;
+}
+
+/* Fill Bars Colors & Glow */
+#hud .fill--health {
+    background: linear-gradient(90deg, #cc0000, #ff3333) !important;
+    box-shadow: 0 0 12px rgba(255, 51, 51, 0.8) !important;
+    border-radius: 4px !important;
+}
+
+#hud .fill--fuel {
+    background: linear-gradient(90deg, #d97706, #fbbf24) !important;
+    box-shadow: 0 0 12px rgba(251, 191, 36, 0.8) !important;
+    border-radius: 4px !important;
+}
+
+/* Pause Icon Button */
+#hud #pauseBtn {
+    width: 48px !important;
+    height: 48px !important;
+    font-size: 1.4rem !important;
+    border-radius: 8px !important;
+    border: 2px solid #ff3333 !important;
+    background: rgba(20, 10, 15, 0.85) !important;
+    box-shadow: 0 0 12px rgba(255, 0, 0, 0.4) !important;
+}
+
+/* ---------------- Bottom HUD (Score, Kills, Dist, Best) ---------------- */
+#hud .hud-bottom {
+    padding: 20px 25px !important;
+    gap: 16px !important;
+}
+
+/* Stat Box Layout */
+#hud .stat {
+    background: rgba(12, 10, 18, 0.9) !important;
+    border: 2px solid rgba(255, 34, 0, 0.5) !important;
+    border-radius: 10px !important;
+    padding: 12px 20px !important; /* Larger padding */
+    min-width: 110px !important;
+    text-align: center !important;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.8), inset 0 0 8px rgba(255, 34, 0, 0.2) !important;
+}
+
+#hud .stat--best {
+    border-color: #ffcc00 !important;
+    box-shadow: 0 0 15px rgba(255, 204, 0, 0.3) !important;
+}
+
+/* Stat Labels (SCORE, KILLS, DIST, BEST) */
+#hud .stat-label {
+    font-size: 0.95rem !important;
+    font-weight: 800 !important;
+    letter-spacing: 1.5px !important;
+    color: #ffaaaa !important;
+    display: block !important;
+    margin-bottom: 4px !important;
+}
+
+#hud .stat--best .stat-label {
+    color: #ffe680 !important;
+}
+
+/* Stat Dynamic Values */
+#hud .stat-val {
+    font-size: 1.65rem !important; /* Significantly larger values */
+    font-weight: 900 !important;
+    color: #ffffff !important;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5) !important;
+    letter-spacing: 1px !important;
+}
+/* ==========================================================================
+   UNIFORM SCREEN SCALING & ASPECT-RATIO FIX FOR ALL DEVICES
+   ========================================================================== */
+
+/* Outer Game Viewport Container Fix */
+#app, #viewport {
+    width: 100vw !important;
+    height: 100vh !important;
+    max-width: 100% !important;
+    max-height: 100% !important;
+    overflow: hidden !important;
+    position: relative !important;
+}
+
+/* Scalable Modal Containers for All Resolution Screens */
+.controls-card,
+.leaderboard-modal-card,
+.game-over-container {
+    width: min(92vw, 850px) !important;
+    max-height: min(88vh, 700px) !important;
+    box-sizing: border-box !important;
+    font-size: clamp(0.9rem, 1.2vw, 1.2rem) !important;
+}
+
+/* Fluid Scalable Start Menu Overlay Panel */
+.menu-panel {
+    width: min(88vw, 480px) !important;
+    padding: clamp(15px, 2.5vh, 32px) !important;
+    box-sizing: border-box !important;
+}
+
+/* Scalable Fluid Typography for Main Overlay Titles */
+.title--road {
+    font-size: clamp(2.2rem, 5vw, 4.5rem) !important;
+}
+
+/* Fluid In-Game HUD Elements (Adapts on 4K Monitors, Laptops & Mobile) */
+#hud .meter {
+    width: clamp(140px, 22vw, 280px) !important;
+}
+
+#hud .stat {
+    padding: clamp(6px, 1.2vh, 12px) clamp(10px, 1.5vw, 20px) !important;
+    min-width: clamp(80px, 10vw, 130px) !important;
+}
+
+#hud .stat-val {
+    font-size: clamp(1.2rem, 2vw, 1.8rem) !important;
+}
+
+#hud .meter-label {
+    font-size: clamp(0.85rem, 1.1vw, 1.15rem) !important;
+}
+
+/* Responsive Media Queries to Prevent UI Overflow on Low Heights */
+@media (max-height: 700px) {
+    .menu-panel {
+        gap: 6px !important;
+    }
+    .leaderboard .lb-row {
+        padding: 8px 12px !important;
+        margin-bottom: 6px !important;
+    }
+    .scrollable-lb {
+        max-height: 40vh !important;
+    }
+}

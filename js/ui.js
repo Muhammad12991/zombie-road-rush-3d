@@ -37,6 +37,13 @@ export const UI = {
             playerInput: document.getElementById("playerInput"),
             identityError: document.getElementById("identityError"),
             exportCsvBtn: document.getElementById("exportCsvBtn"),
+
+            // New Main Menu Leaderboard Elements
+            mainLeaderboardBtn: document.getElementById("mainLeaderboardBtn"),
+            menuLeaderboardModal: document.getElementById("menuLeaderboardModal"),
+            menuLeaderboardList: document.getElementById("menuLeaderboardList"),
+            menuExportCsvBtn: document.getElementById("menuExportCsvBtn"),
+            closeLeaderboardBtn: document.getElementById("closeLeaderboardBtn"),
         };
 
         this._buildSpeedLines();
@@ -71,7 +78,6 @@ export const UI = {
     _checkCriticalWarning(healthPct, fuelPct) {
         const container = this.els.gameContainer;
         if (!container) return;
-        // Agar health ya fuel 30% se kam ya barabar ho jaye
         if (healthPct <= 30 || fuelPct <= 30) {
             container.classList.add("critical-warning");
         } else {
@@ -85,7 +91,6 @@ export const UI = {
         this.els.healthFill.style.width = `${clamped}%`;
         this.els.healthFill.style.filter = clamped < 25 ? "brightness(1.3) saturate(1.4)" : "none";
 
-        // Current fuel fill value ka andaza laga kar check trigger karein
         const fuelVal = this.els.fuelFill ? parseFloat(this.els.fuelFill.style.width) || 100 : 100;
         this._checkCriticalWarning(clamped, fuelVal);
     },
@@ -95,7 +100,6 @@ export const UI = {
         const clamped = Math.max(0, Math.min(100, pct));
         this.els.fuelFill.style.width = `${clamped}%`;
 
-        // Current health fill value ka andaza laga kar check trigger karein
         const healthVal = this.els.healthFill ? parseFloat(this.els.healthFill.style.width) || 100 : 100;
         this._checkCriticalWarning(healthVal, clamped);
     },
@@ -163,7 +167,6 @@ export const UI = {
         el.className = `combo-popup ${colorClass}`;
         el.classList.remove("hidden");
 
-        // Restart animation bounce
         el.style.animation = "none";
         void el.offsetWidth;
         el.style.animation = "comboPopAnim 0.75s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards";
@@ -188,6 +191,13 @@ export const UI = {
         });
     },
 
+    // Toggle Main Menu Leaderboard Modal
+    toggleMenuLeaderboard(show) {
+        if (this.els.menuLeaderboardModal) {
+            this.els.menuLeaderboardModal.classList.toggle("hidden", !show);
+        }
+    },
+
     setStartBest(best) {
         if (this.els.startBest) this.els.startBest.textContent = Math.floor(best).toLocaleString();
     },
@@ -201,18 +211,22 @@ export const UI = {
         if (this.els.newBest) this.els.newBest.classList.toggle("hidden", !isNewBest);
     },
 
-    setLeaderboard(topScores, justPlayed) {
-        const el = this.els.leaderboardList;
+    // Reusable Top 10 Leaderboard Renderer (Works for Game Over & Main Menu Modal)
+    // Clean & Readable Leaderboard Renderer
+    setLeaderboard(topScores, justPlayed, targetElement = null) {
+        const el = targetElement || this.els.leaderboardList;
         if (!el) return;
         el.innerHTML = "";
+
         if (!topScores || !topScores.length) {
             const empty = document.createElement("div");
             empty.className = "lb-empty";
-            empty.textContent = "No runs recorded yet.";
+            empty.textContent = "NO RUNS RECORDED YET";
             el.appendChild(empty);
             return;
         }
-        topScores.forEach((entry, i) => {
+
+        topScores.slice(0, 10).forEach((entry, i) => {
             const row = document.createElement("div");
             const isThisRun =
                 justPlayed &&
@@ -222,21 +236,46 @@ export const UI = {
                 entry.timestamp === justPlayed.timestamp;
             row.className = "lb-row" + (isThisRun ? " lb-current" : "");
 
+            // 1. Rank Number
             const rank = document.createElement("span");
             rank.className = "lb-rank";
-            rank.textContent = `${i + 1}`;
+            rank.textContent = `#${i + 1}`;
 
-            const nameEl = document.createElement("span");
-            nameEl.className = "lb-name";
-            nameEl.textContent = `${entry.company} - ${entry.player}`;
+            // 2. Full Player & Company Name (No Clipping)
+            const nameEl = document.createElement("div");
+            nameEl.className = "lb-name-container";
+
+            const compName = entry.company || "ANONYMOUS";
+            const playName = entry.player || "DRIVER";
+
+            nameEl.innerHTML = `<span class="lb-comp">${compName}</span> <span class="lb-player">(${playName})</span>`;
+
+            // 3. Clean Text-Based Stats (No Emojis)
+            const statsWrap = document.createElement("div");
+            statsWrap.className = "lb-stats-wrap";
+
+            if (entry.kills !== undefined) {
+                const killsEl = document.createElement("span");
+                killsEl.className = "lb-stat-badge lb-kills";
+                killsEl.textContent = `KILLS: ${entry.kills}`;
+                statsWrap.appendChild(killsEl);
+            }
+
+            if (entry.distance !== undefined) {
+                const distEl = document.createElement("span");
+                distEl.className = "lb-stat-badge lb-dist";
+                distEl.textContent = `DIST: ${Math.floor(entry.distance)}m`;
+                statsWrap.appendChild(distEl);
+            }
 
             const scoreEl = document.createElement("span");
             scoreEl.className = "lb-score";
-            scoreEl.textContent = Math.floor(entry.score).toLocaleString();
+            scoreEl.textContent = `SCORE: ${Math.floor(entry.score).toLocaleString()}`;
+            statsWrap.appendChild(scoreEl);
 
             row.appendChild(rank);
             row.appendChild(nameEl);
-            row.appendChild(scoreEl);
+            row.appendChild(statsWrap);
             el.appendChild(row);
         });
     },
